@@ -103,8 +103,58 @@ select option{background:var(--bg3)}
 .config-row:last-child{border-bottom:none}
 .config-nombre{font-size:11px;color:var(--text2);grid-column:1/-1;padding-bottom:4px}
 </style>
+<style id="login-style">
+#login-screen{position:fixed;inset:0;background:#0f1a0f;z-index:9999;display:flex;align-items:center;justify-content:center}
+.login-box{background:#1a2a1a;border:1px solid #2a3d2a;border-radius:14px;padding:32px 28px;width:90%;max-width:340px;text-align:center}
+.login-logo{font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:#4ade80;margin-bottom:6px;letter-spacing:.05em}
+.login-sub{font-size:12px;color:#5a7a5a;margin-bottom:28px}
+.login-input{background:#1e2d1e;border:1px solid #3a5a3a;border-radius:8px;color:#e8f5e8;font-size:20px;padding:12px 16px;width:100%;text-align:center;letter-spacing:.3em;outline:none;font-family:'DM Mono',monospace;margin-bottom:12px;-webkit-text-security:disc}
+.login-input:focus{border-color:#16a34a}
+.login-btn{background:#16a34a;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;padding:12px;width:100%;cursor:pointer;margin-top:4px}
+.login-btn:hover{background:#22c55e}
+.login-error{color:#f87171;font-size:12px;margin-top:10px;min-height:18px}
+.login-hint{font-size:11px;color:#3a5a3a;margin-top:20px}
+</style>
 </head>
 <body>
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">LV / ADMIN</div>
+    <div class="login-sub">LaVerdu · Panel administrativo</div>
+    <input class="login-input" type="password" id="login-pass" placeholder="••••••" maxlength="20" onkeydown="if(event.key==='Enter')checkLogin()">
+    <button class="login-btn" onclick="checkLogin()">Ingresar</button>
+    <div class="login-error" id="login-error"></div>
+    <div class="login-hint">Acceso restringido</div>
+  </div>
+</div>
+<script>
+(function(){
+  function h(s){var r=0;for(var i=0;i<s.length;i++){r=((r<<5)-r)+s.charCodeAt(i);r|=0;}return r.toString();}
+  var H='648201633';
+  var K='lv_auth_v1';
+  window.checkLogin=function(){
+    var v=document.getElementById('login-pass').value;
+    if(h(v)===H){
+      localStorage.setItem(K,H);
+      document.getElementById('login-screen').style.display='none';
+      var s=document.getElementById('login-style');if(s)s.remove();
+    }else{
+      var e=document.getElementById('login-error');
+      e.textContent='Contraseña incorrecta';
+      document.getElementById('login-pass').value='';
+      setTimeout(function(){e.textContent='';},2500);
+    }
+  };
+  if(localStorage.getItem(K)===H){
+    document.addEventListener('DOMContentLoaded',function(){
+      var ls=document.getElementById('login-screen');
+      var lss=document.getElementById('login-style');
+      if(ls)ls.style.display='none';
+      if(lss)lss.remove();
+    });
+  }
+})();
+</script>
 <nav class="nav">
   <div class="nav-logo">LV<span>/</span>ADM</div>
   <div class="nav-tabs">
