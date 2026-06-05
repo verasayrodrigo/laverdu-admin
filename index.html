@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>LaVerdu Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1a0f;--bg2:#162016;--bg3:#1e2d1e;--card:#1a2a1a;--border:#2a3d2a;--border2:#3a5a3a;--green:#4ade80;--green2:#22c55e;--green3:#16a34a;--greenDim:#4ade8033;--yellow:#fbbf24;--yellowDim:#fbbf2422;--red:#f87171;--redDim:#f8717122;--blue:#60a5fa;--blueDim:#60a5fa22;--text:#e8f5e8;--text2:#9dbf9d;--text3:#5a7a5a;--mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;font-size:14px}
+.nav{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 10px;height:50px;gap:4px}
+.nav-logo{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--green);white-space:nowrap}
+.nav-logo span{color:var(--text3)}
+.nav-tabs{display:flex;gap:1px;overflow-x:auto}
+.nav-tab{background:none;border:none;color:var(--text3);font-family:var(--sans);font-size:11px;font-weight:500;padding:5px 8px;border-radius:6px;cursor:pointer;white-space:nowrap;transition:all .15s}
+.nav-tab.active{background:var(--bg3);color:var(--green)}
+.view{display:none;padding:10px;max-width:800px;margin:0 auto;padding-bottom:30px}
+.view.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px}
+.card-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+@media(min-width:500px){.kpi-grid{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 10px}
+.kpi-val{font-family:var(--mono);font-size:18px;font-weight:500;color:var(--green);line-height:1}
+.kpi-val.yellow{color:var(--yellow)}.kpi-val.red{color:var(--red)}.kpi-val.blue{color:var(--blue)}
+.kpi-lbl{font-size:10px;color:var(--text3);margin-top:3px}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:6px 6px;border-bottom:1px solid var(--border)}
+.tbl th.r,.tbl td.r{text-align:right}
+.tbl td{padding:7px 6px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--bg3)}
+.badge{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:500;padding:2px 6px;border-radius:4px}
+.badge-green{background:var(--greenDim);color:var(--green)}
+.badge-yellow{background:var(--yellowDim);color:var(--yellow)}
+.badge-red{background:var(--redDim);color:var(--red)}
+.badge-blue{background:var(--blueDim);color:var(--blue)}
+input,select,textarea{background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-family:var(--sans);font-size:14px;padding:8px 10px;width:100%;outline:none;transition:border .15s;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--green3)}
+input[type=number]{font-family:var(--mono)}
+select option{background:var(--bg3)}
+.field{margin-bottom:8px}
+.field-label{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px}
+.btn{border:none;border-radius:8px;font-family:var(--sans);font-weight:600;cursor:pointer;transition:all .15s;font-size:13px;padding:9px 14px}
+.btn-primary{background:var(--green3);color:#fff;width:100%;margin-top:6px}
+.btn-primary:hover{background:var(--green2)}
+.btn-ghost{background:var(--bg3);border:1px solid var(--border2);color:var(--text2)}
+.btn-ghost:hover{border-color:var(--green3);color:var(--green)}
+.btn-danger{background:var(--redDim);border:1px solid #f8717144;color:var(--red)}
+.btn-warn{background:var(--yellowDim);border:1px solid #fbbf2444;color:var(--yellow)}
+.btn-sm{font-size:11px;padding:5px 10px;border-radius:6px}
+.btn-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.search-wrap{position:relative;margin-bottom:8px}
+.search-wrap input{padding-left:34px}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;pointer-events:none}
+.totals-bar{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;margin-bottom:10px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.t-item{text-align:center;min-width:60px}
+.t-val{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--green)}
+.t-lbl{font-size:10px;color:var(--text3);margin-top:1px}
+.venta-row{display:grid;grid-template-columns:1fr auto auto auto;gap:5px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)}
+.venta-row:last-child{border-bottom:none}
+.qty-ctrl{display:flex;align-items:center;gap:3px}
+.qty-btn{background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:5px;width:24px;height:24px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.qty-btn:hover{border-color:var(--green3);color:var(--green)}
+.qty-val{font-family:var(--mono);font-size:12px;min-width:20px;text-align:center}
+.del-btn{background:none;border:none;color:var(--text3);cursor:pointer;padding:3px;font-size:15px}
+.del-btn:hover{color:var(--red)}
+.si-btn{padding:5px 10px;font-size:11px;border-radius:6px;font-weight:600;cursor:pointer;border:1px solid;transition:all .15s;white-space:nowrap}
+.si-btn.active{background:var(--greenDim);border-color:var(--green3);color:var(--green)}
+.si-btn.inactive{background:var(--bg3);border-color:var(--border2);color:var(--text3)}
+.alert{border-radius:8px;padding:9px 12px;font-size:12px;margin-bottom:8px;line-height:1.5}
+.alert-green{background:var(--greenDim);color:var(--green);border:1px solid #16a34a44}
+.alert-yellow{background:var(--yellowDim);color:var(--yellow);border:1px solid #fbbf2444}
+.alert-red{background:var(--redDim);color:var(--red);border:1px solid #f8717144}
+.alert-blue{background:var(--blueDim);color:var(--blue);border:1px solid #60a5fa44}
+.empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
+.cat-tag{font-size:10px;color:var(--text3);background:var(--bg3);border-radius:4px;padding:2px 5px}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:14px 14px 0 0;padding:18px 14px 28px;width:100%;max-width:600px;max-height:88vh;overflow-y:auto}
+.modal-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:var(--bg3);border:none;color:var(--text2);font-size:18px;width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.sdiv{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);padding:10px 0 6px;border-bottom:1px solid var(--border);margin-bottom:8px}
+.precio-d{color:var(--green);font-family:var(--mono)}
+.precio-m{color:var(--yellow);font-family:var(--mono)}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.combo-card{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:12px;margin-bottom:10px}
+.combo-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.combo-nombre{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--green)}
+.combo-precio-big{font-family:var(--mono);font-size:20px;font-weight:500;color:var(--text)}
+.combo-stats{display:flex;gap:10px;flex-wrap:wrap}
+.combo-stat{font-size:11px;color:var(--text2)}
+.combo-stat strong{font-family:var(--mono);color:var(--green)}
+.prep-card{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:12px;margin-bottom:10px}
+.tab-section{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px}
+.config-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;align-items:end;padding:8px 0;border-bottom:1px solid var(--border)}
+.config-row:last-child{border-bottom:none}
+.config-nombre{font-size:11px;color:var(--text2);grid-column:1/-1;padding-bottom:4px}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-logo">LV<span>/</span>ADM</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showView('inicio',this)">Inicio</button>
+    <button class="nav-tab" onclick="showView('mercado',this)">Mercado</button>
+    <button class="nav-tab" onclick="showView('venta',this)">Venta</button>
+    <button class="nav-tab" onclick="showView('combos',this)">Combos</button>
+    <button class="nav-tab" onclick="showView('preparados',this)">Prep.</button>
+    <button class="nav-tab" onclick="showView('config',this)">Config</button>
+  </div>
+</nav>
+
+<!-- INICIO -->
+<div id="view-inicio" class="view active">
+  <div class="kpi-grid" id="kpi-grid"></div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div class="card-title" style="margin-bottom:0">Buscador de precios</div>
+      <button class="btn btn-ghost btn-sm" onclick="abrirNuevoProducto()">+ Nuevo producto</button>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Producto..." id="buscar-input" oninput="buscar(this.value)">
+    </div>
+    <div id="buscar-results"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Márgenes por grupo</div>
+    <table class="tbl">
+      <thead><tr><th>Grupo</th><th class="r">Del.</th><th class="r">May.</th><th class="r">Merma</th></tr></thead>
+      <tbody id="grupos-tbl"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MERCADO -->
+<div id="view-mercado" class="view">
+  <div class="card">
+    <div class="card-title">Agregar producto a la compra</div>
+    <div class="field">
+      <select id="merca-sel" onchange="addMercado(this.value); this.value=''">
+        <option value="">— Seleccioná un producto —</option>
+      </select>
+    </div>
+  </div>
+  <div id="merca-lista"></div>
+  <div id="merca-empty" class="empty"><div style="font-size:28px;margin-bottom:8px">🛒</div>Seleccioná productos para armar la compra</div>
+  <div id="merca-footer" style="display:none">
+    <div class="totals-bar" id="merca-totals"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost btn-sm" onclick="exportMercado()">📋 Copiar lista</button>
+      <button class="btn btn-danger btn-sm" onclick="clearMercado()">🗑 Limpiar todo</button>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--text3)">💡 Marcá SI para actualizar el precio de ese producto. Los cambios se guardan automáticamente.</div>
+  </div>
+</div>
+
+<!-- VENTA -->
+<div id="view-venta" class="view">
+  <div class="card">
+    <div class="card-title">Armar venta</div>
+    <div class="field">
+      <div class="field-label">Tipo de lista</div>
+      <select id="v-tipo" onchange="ventaSearch(document.getElementById('v-buscar').value)">
+        <option value="D">Delivery / Público</option>
+        <option value="M">Mayorista</option>
+      </select>
+    </div>
+    <div class="search-wrap" style="margin-bottom:0">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Buscar producto..." id="v-buscar" oninput="ventaSearch(this.value)">
+    </div>
+    <div id="v-results" style="max-height:200px;overflow-y:auto;margin-top:4px"></div>
+  </div>
+  <div id="v-empty" class="empty"><div style="font-size:28px;margin-bottom:8px">💰</div>Buscá y agregá productos</div>
+  <div id="v-content" style="display:none">
+    <div class="totals-bar">
+      <div class="t-item"><div class="t-val" id="v-sub">$0</div><div class="t-lbl">Subtotal</div></div>
+      <div class="t-item"><div class="t-val" id="v-cos">$0</div><div class="t-lbl">Costo</div></div>
+      <div class="t-item"><div class="t-val" id="v-gan">$0</div><div class="t-lbl">Ganancia</div></div>
+      <div class="t-item"><div class="t-val" id="v-mg">0%</div><div class="t-lbl">Margen</div></div>
+    </div>
+    <div class="card"><div id="v-lista"></div></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="cobrarVenta()" style="flex:1">✓ Cobrar y nueva venta</button>
+      <button class="btn btn-danger btn-sm" onclick="clearVenta()">🗑</button>
+    </div>
+  </div>
+</div>
+
+<!-- COMBOS -->
+<div id="view-combos" class="view">
+  <div class="btn-row" style="margin-bottom:10px">
+    <button class="btn btn-ghost btn-sm" onclick="abrirNuevoCombo()">+ Nuevo combo</button>
+  </div>
+  <div id="combos-lista"></div>
+  <div class="card">
+    <div class="card-title">Calculadora rápida</div>
+    <div class="grid2">
+      <div class="field"><div class="field-label">Precio de lista (suma)</div><input type="number" id="calc-lista" oninput="calcCombo()" placeholder="0"></div>
+      <div class="field"><div class="field-label">Descuento %</div><input type="number" id="calc-desc" oninput="calcCombo()" value="5"></div>
+    </div>
+    <div class="field"><div class="field-label">Costo total estimado</div><input type="number" id="calc-costo" oninput="calcCombo()" placeholder="0"></div>
+    <div id="calc-result" style="display:none" class="alert alert-green"></div>
+  </div>
+</div>
+
+<!-- PREPARADOS -->
+<div id="view-preparados" class="view">
+  <div class="btn-row" style="margin-bottom:10px">
+    <button class="btn btn-ghost btn-sm" onclick="abrirNuevoPrep()">+ Nuevo preparado</button>
+  </div>
+  <div id="prep-lista"></div>
+  <div id="prep-empty" class="empty"><div style="font-size:28px;margin-bottom:8px">🥗</div>Aún no hay preparados. Creá el primero.</div>
+</div>
+
+<!-- CONFIG -->
+<div id="view-config" class="view">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div class="card-title" style="margin-bottom:0">Productos</div>
+      <button class="btn btn-ghost btn-sm" onclick="abrirNuevoProducto()">+ Nuevo producto</button>
+    </div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:0">Agregá productos que no estaban en el catálogo original.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Márgenes por grupo</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Los cambios se guardan automáticamente y afectan los precios calculados de todos los productos del grupo.</div>
+    <div id="config-grupos"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Backup de datos</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:10px">Exportá un backup antes de limpiar caché o cambiar de dispositivo. Importá para restaurar.</div>
+    <div class="btn-row">
+      <button class="btn btn-ghost btn-sm" onclick="exportBackup()">⬇ Exportar backup</button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('import-file').click()">⬆ Importar backup</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importBackup(this)">
+    </div>
+    <div id="backup-msg" style="display:none;margin-top:8px" class="alert alert-green"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Restablecer datos</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:10px">Borra todos los cambios y vuelve a los datos originales del archivo XLSM.</div>
+    <button class="btn btn-danger btn-sm" onclick="resetData()">⚠ Restablecer todo</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal-bg" class="modal-bg" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-title"><span id="modal-title">—</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const SEED = {"grupos": [{"nombre": "Commodities (papa/cebolla/zanahoria)", "merma": 0.06, "empaque": 0, "margenD": 0.45, "margenM": 0.18, "redondeo": 100}, {"nombre": "Frutas volumen (banana/manzana/naranja)", "merma": 0.09, "empaque": 0, "margenD": 0.46, "margenM": 0.2, "redondeo": 100}, {"nombre": "Hojas / Alta merma (verdes)", "merma": 0.14, "empaque": 200.0, "margenD": 0.52, "margenM": 0.25, "redondeo": 100}, {"nombre": "Especialidades / Premium (champi/berries/palta)", "merma": 0.05, "empaque": 150.0, "margenD": 0.5, "margenM": 0.22, "redondeo": 100}, {"nombre": "Huevos", "merma": 0.03, "empaque": 150.0, "margenD": 0.23, "margenM": 0.15, "redondeo": 100}, {"nombre": "Despensa saludable (granola/frutos secos)", "merma": 0.02, "empaque": 0, "margenD": 0.38, "margenM": 0.22, "redondeo": 100}, {"nombre": "Bebidas (agua/gaseosas)", "merma": 0.01, "empaque": 0, "margenD": 0.34, "margenM": 0.18, "redondeo": 100}], "productos": [{"nombre": "Aceite de Oliva 1°", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Aceite de Oliva 2°", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 3300.0, "kgBulto": 1.0, "costoUnit": 3300.0, "costoReal": 3333.33, "precioD": 5100, "precioM": 4100, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Acelga", "categoria": "Hojas verdes", "grupo": "Hojas / Alta merma (verdes)", "unidad": "unidad", "costoBulto": 6000.0, "kgBulto": 6.0, "costoUnit": 1000.0, "costoReal": 1362.79, "precioD": 2900, "precioM": 1900, "margenD": 52.0, "margenM": 25.0, "activo": true}, {"nombre": "Agua", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Aji Molido", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 600.0, "kgBulto": 1.0, "costoUnit": 600.0, "costoReal": 606.06, "precioD": 1000, "precioM": 800, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Ajo", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "unidad", "costoBulto": 28000.0, "kgBulto": 55.0, "costoUnit": 509.0909091, "costoReal": 541.59, "precioD": 1000, "precioM": 700, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Albahaca Plantin", "categoria": "Hojas verdes", "grupo": "Hojas / Alta merma (verdes)", "unidad": "unidad", "costoBulto": 3000.0, "kgBulto": 3.0, "costoUnit": 1000.0, "costoReal": 1362.79, "precioD": 2900, "precioM": 1900, "margenD": 52.0, "margenM": 25.0, "activo": true}, {"nombre": "Alcaucil", "categoria": "Verduras", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 5000.0, "kgBulto": 10.0, "costoUnit": 500.0, "costoReal": 676.32, "precioD": 1400, "precioM": 900, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Almendras", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Almohaditas Chocolate", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Almohaditas Frutilla", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Almohaditas Limon", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Anana", "categoria": "Frutas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 5500.0, "kgBulto": 1.0, "costoUnit": 5500.0, "costoReal": 5939.47, "precioD": 11900, "precioM": 7700, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Anco / Calabacin", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "unidad", "costoBulto": 9000.0, "kgBulto": 16.0, "costoUnit": 562.5, "costoReal": 598.4, "precioD": 1100, "precioM": 800, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Apio", "categoria": "Hojas verdes", "grupo": "Hojas / Alta merma (verdes)", "unidad": "kg", "costoBulto": 3000.0, "kgBulto": 1.5, "costoUnit": 2000.0, "costoReal": 2525.58, "precioD": 5300, "precioM": 3400, "margenD": 52.0, "margenM": 25.0, "activo": true}, {"nombre": "Arandanos", "categoria": "Frutas", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "kg", "costoBulto": 2933.0, "kgBulto": 1.0, "costoUnit": 2933.0, "costoReal": 3223.08, "precioD": 6000, "precioM": 4100, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Arandanos Congelados", "categoria": "Congelados", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 1580.0, "kgBulto": 1.0, "costoUnit": 1580.0, "costoReal": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Aritos Frutales", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Avena Instantanea", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Azucar x1KG", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Banana Boliviana", "categoria": "Frutas", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "kg", "costoBulto": 23000.0, "kgBulto": 18.0, "costoUnit": 1277.777778, "costoReal": 1404.15, "precioD": 2700, "precioM": 1800, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Banana Deshidratada (chips)", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Banana Ecuador", "categoria": "Frutas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "kg", "costoBulto": 33000.0, "kgBulto": 18.0, "costoUnit": 1833.333333, "costoReal": 2079.82, "precioD": 4200, "precioM": 2700, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Batata", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 18000.0, "kgBulto": 12.0, "costoUnit": 1500.0, "costoReal": 1595.74, "precioD": 3000, "precioM": 2000, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Berenjena", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 14000.0, "kgBulto": 12.0, "costoUnit": 1166.666667, "costoReal": 1241.13, "precioD": 2300, "precioM": 1600, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Bicarbonato", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 700.0, "kgBulto": 1.0, "costoUnit": 700.0, "costoReal": 707.07, "precioD": 1100, "precioM": 900, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Bolitas de Chocolate", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Boniato", "categoria": "Verduras", "grupo": "Hojas / Alta merma (verdes)", "unidad": "kg", "costoBulto": 30000.0, "kgBulto": 12.0, "costoUnit": 2500.0, "costoReal": 3106.98, "precioD": 6500, "precioM": 4200, "margenD": 52.0, "margenM": 25.0, "activo": true}, {"nombre": "Brocoli", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "unidad", "costoBulto": 10000.0, "kgBulto": 6.0, "costoUnit": 1666.666667, "costoReal": 1773.05, "precioD": 3300, "precioM": 2200, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Cafe c/leche", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Cafe Dolca", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Calabaza Rayada", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 5000.0, "kgBulto": 1.0, "costoUnit": 5000.0, "costoReal": 5319.15, "precioD": 9700, "precioM": 6500, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Carbon", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1900.0, "kgBulto": 1.0, "costoUnit": 1900.0, "costoReal": 1919.19, "precioD": 3000, "precioM": 2400, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Cebolla", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 12000.0, "kgBulto": 16.0, "costoUnit": 750.0, "costoReal": 797.87, "precioD": 1500, "precioM": 1000, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Cebolla Morada", "categoria": "Verduras", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "kg", "costoBulto": 21000.0, "kgBulto": 20.0, "costoUnit": 1050.0, "costoReal": 1255.26, "precioD": 2600, "precioM": 1700, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Cerezas", "categoria": "Frutas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "kg", "costoBulto": 50000.0, "kgBulto": 9.0, "costoUnit": 5555.555556, "costoReal": 5997.95, "precioD": 12000, "precioM": 7700, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Champignon", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 17000.0, "kgBulto": 1.0, "costoUnit": 17000.0, "costoReal": 18085.11, "precioD": 32900, "precioM": 22100, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Chaucha Fina", "categoria": "Verduras", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "kg", "costoBulto": 20000.0, "kgBulto": 5.0, "costoUnit": 4000.0, "costoReal": 4395.6, "precioD": 8200, "precioM": 5500, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Cherry", "categoria": "Verduras", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "kg", "costoBulto": 14000.0, "kgBulto": 5.0, "costoUnit": 2800.0, "costoReal": 3097.37, "precioD": 6200, "precioM": 4000, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Chimichurri", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 700.0, "kgBulto": 1.0, "costoUnit": 700.0, "costoReal": 707.07, "precioD": 1100, "precioM": 900, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Chipá congelado", "categoria": "Congelados", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 5250.0, "kgBulto": 1.0, "costoUnit": 5250.0, "costoReal": 5676.32, "precioD": 11400, "precioM": 7300, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Choclo", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "unidad", "costoBulto": 20000.0, "kgBulto": 40.0, "costoUnit": 500.0, "costoReal": 531.91, "precioD": 1000, "precioM": 700, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Ciruela", "categoria": "Frutas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "kg", "costoBulto": 35000.0, "kgBulto": 12.0, "costoUnit": 2916.666667, "costoReal": 3220.18, "precioD": 6500, "precioM": 4200, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Coliflor", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1063.83, "precioD": 2000, "precioM": 1300, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "COMBO CLASICO", "categoria": "Combos", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 0.0, "kgBulto": 1.0, "costoUnit": 0.0, "costoReal": 150.0, "precioD": 300, "precioM": 200, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "COMBO FULL", "categoria": "Combos", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 0.0, "kgBulto": 1.0, "costoUnit": 0.0, "costoReal": 150.0, "precioD": 300, "precioM": 200, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Condimento para Arroz", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 600.0, "kgBulto": 1.0, "costoUnit": 600.0, "costoReal": 606.06, "precioD": 1000, "precioM": 800, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Condimento para Pizza", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 600.0, "kgBulto": 1.0, "costoUnit": 600.0, "costoReal": 606.06, "precioD": 1000, "precioM": 800, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Copos Azucarados", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Curcuma", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 10000.0, "kgBulto": 1.0, "costoUnit": 10000.0, "costoReal": 10638.3, "precioD": 19400, "precioM": 13000, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Dulce de Ciruela (Casero)", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "unidad", "costoBulto": 3366.0, "kgBulto": 1.0, "costoUnit": 3366.0, "costoReal": 3434.69, "precioD": 5600, "precioM": 4500, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Dulce de Leche", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Durazno", "categoria": "Frutas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "kg", "costoBulto": 40000.0, "kgBulto": 16.0, "costoUnit": 2500.0, "costoReal": 2781.58, "precioD": 5600, "precioM": 3600, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Durazno Pelon", "categoria": "Frutas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "kg", "costoBulto": 40000.0, "kgBulto": 16.0, "costoUnit": 2500.0, "costoReal": 2781.58, "precioD": 5600, "precioM": 3600, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Edulcorante", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "COMBO FRUTERO", "categoria": "Combos", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 0.0, "kgBulto": 1.0, "costoUnit": 0.0, "costoReal": 150.0, "precioD": 300, "precioM": 200, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Esparragos", "categoria": "Verduras", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 2000.0, "kgBulto": 1.0, "costoUnit": 2000.0, "costoReal": 2255.26, "precioD": 4600, "precioM": 2900, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Espinaca Invierno", "categoria": "Hojas verdes", "grupo": "Hojas / Alta merma (verdes)", "unidad": "unidad", "costoBulto": 18000.0, "kgBulto": 12.0, "costoUnit": 1500.0, "costoReal": 1944.19, "precioD": 4100, "precioM": 2600, "margenD": 52.0, "margenM": 25.0, "activo": true}, {"nombre": "Espinaca Verano", "categoria": "Hojas verdes", "grupo": "Hojas / Alta merma (verdes)", "unidad": "unidad", "costoBulto": 14000.0, "kgBulto": 12.0, "costoUnit": 1166.666667, "costoReal": 1556.59, "precioD": 3300, "precioM": 2100, "margenD": 52.0, "margenM": 25.0, "activo": true}, {"nombre": "Frutilla", "categoria": "Frutas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "kg", "costoBulto": 45000.0, "kgBulto": 5.0, "costoUnit": 9000.0, "costoReal": 9623.68, "precioD": 19300, "precioM": 12400, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Frutos Rojos Congelados", "categoria": "Congelados", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 1580.0, "kgBulto": 1.0, "costoUnit": 1580.0, "costoReal": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Galleta de Arroz Dulce", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Galleta de Arroz Integral", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Galleta de Arroz Salada", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Garbanzos", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Granada", "categoria": "Frutas", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "unidad", "costoBulto": 19000.0, "kgBulto": 12.0, "costoUnit": 1583.333333, "costoReal": 1684.4, "precioD": 3100, "precioM": 2100, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Granola c/miel", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Harina de Avena", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Hileret x 50", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Jengibre", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 8000.0, "kgBulto": 1.0, "costoUnit": 8000.0, "costoReal": 8510.64, "precioD": 15500, "precioM": 10400, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Kiwi", "categoria": "Frutas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "kg", "costoBulto": 55000.0, "kgBulto": 9.0, "costoUnit": 6111.111111, "costoReal": 6582.75, "precioD": 13200, "precioM": 8500, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Lata Coca Cola", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Lata Coca Cola - Zero", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Lata Schweps", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Lata Tomate", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Laurel", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1200.0, "kgBulto": 1.0, "costoUnit": 1200.0, "costoReal": 1212.12, "precioD": 1900, "precioM": 1500, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Leche LV comun", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Leche LV descremada", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Lechuga Manteca", "categoria": "Hojas verdes", "grupo": "Hojas / Alta merma (verdes)", "unidad": "kg", "costoBulto": 12000.0, "kgBulto": 8.0, "costoUnit": 1500.0, "costoReal": 1944.19, "precioD": 4100, "precioM": 2600, "margenD": 52.0, "margenM": 25.0, "activo": true}, {"nombre": "Lechuga Repollada", "categoria": "Hojas verdes", "grupo": "Hojas / Alta merma (verdes)", "unidad": "kg", "costoBulto": 13000.0, "kgBulto": 8.0, "costoUnit": 1625.0, "costoReal": 2089.53, "precioD": 4400, "precioM": 2800, "margenD": 52.0, "margenM": 25.0, "activo": true}, {"nombre": "Lechuguin Planta", "categoria": "Hojas verdes", "grupo": "Hojas / Alta merma (verdes)", "unidad": "unidad", "costoBulto": 12000.0, "kgBulto": 12.0, "costoUnit": 1000.0, "costoReal": 1362.79, "precioD": 2900, "precioM": 1900, "margenD": 52.0, "margenM": 25.0, "activo": true}, {"nombre": "Lentejas", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Levadura Seca", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Lima", "categoria": "Frutas", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "kg", "costoBulto": 4500.0, "kgBulto": 1.0, "costoUnit": 4500.0, "costoReal": 4945.05, "precioD": 9200, "precioM": 6200, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Limon", "categoria": "Frutas", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 9000.0, "kgBulto": 16.0, "costoUnit": 562.5, "costoReal": 598.4, "precioD": 1100, "precioM": 800, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Maiz pisingayo", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Mandarina Criolla", "categoria": "Frutas", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "kg", "costoBulto": 18000.0, "kgBulto": 16.0, "costoUnit": 1125.0, "costoReal": 1236.26, "precioD": 2300, "precioM": 1600, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Mandarina Dancy", "categoria": "Frutas", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "kg", "costoBulto": 16000.0, "kgBulto": 16.0, "costoUnit": 1000.0, "costoReal": 1098.9, "precioD": 2100, "precioM": 1400, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Mandarina Murcot", "categoria": "Frutas", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "kg", "costoBulto": 1.0, "kgBulto": 1.0, "costoUnit": 1.0, "costoReal": 1.1, "precioD": 100, "precioM": 100, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Mandarina Okitzu", "categoria": "Frutas", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "kg", "costoBulto": 13000.0, "kgBulto": 10.0, "costoUnit": 1300.0, "costoReal": 1428.57, "precioD": 2700, "precioM": 1800, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Mango", "categoria": "Frutas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 13000.0, "kgBulto": 12.0, "costoUnit": 1083.333333, "costoReal": 1290.35, "precioD": 2600, "precioM": 1700, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Mani con Cascara", "categoria": "Almacen", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "unidad", "costoBulto": 18000.0, "kgBulto": 16.0, "costoUnit": 1125.0, "costoReal": 1196.81, "precioD": 2200, "precioM": 1500, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Manzana Granel", "categoria": "Frutas", "grupo": "Hojas / Alta merma (verdes)", "unidad": "kg", "costoBulto": 28000.0, "kgBulto": 18.0, "costoUnit": 1555.555556, "costoReal": 2008.79, "precioD": 4200, "precioM": 2700, "margenD": 52.0, "margenM": 25.0, "activo": true}, {"nombre": "Manzana Pink", "categoria": "Frutas", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "kg", "costoBulto": 26000.0, "kgBulto": 16.0, "costoUnit": 1625.0, "costoReal": 1785.71, "precioD": 3400, "precioM": 2300, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Manzana Roja", "categoria": "Frutas", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "kg", "costoBulto": 60000.0, "kgBulto": 16.0, "costoUnit": 3750.0, "costoReal": 4120.88, "precioD": 7700, "precioM": 5200, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Manzana Verde", "categoria": "Frutas", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "kg", "costoBulto": 45000.0, "kgBulto": 16.0, "costoUnit": 2812.5, "costoReal": 3090.66, "precioD": 5800, "precioM": 3900, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Media Docena de Huevos", "categoria": "Huevos", "grupo": "Huevos", "unidad": "unidad", "costoBulto": 1.0, "kgBulto": 1.0, "costoUnit": 1.0, "costoReal": 151.03, "precioD": 200, "precioM": 200, "margenD": 23.0, "margenM": 15.0, "activo": true}, {"nombre": "Maple Huevo Blanco Chico", "categoria": "Huevos", "grupo": "Huevos", "unidad": "unidad", "costoBulto": 58000.0, "kgBulto": 12.0, "costoUnit": 4833.333333, "costoReal": 5132.82, "precioD": 6700, "precioM": 6100, "margenD": 23.0, "margenM": 15.0, "activo": true}, {"nombre": "Maple Huevo Blanco 2 Kg", "categoria": "Huevos", "grupo": "Huevos", "unidad": "unidad", "costoBulto": 3825.0, "kgBulto": 1.0, "costoUnit": 3825.0, "costoReal": 4093.3, "precioD": 5400, "precioM": 4900, "margenD": 23.0, "margenM": 15.0, "activo": true}, {"nombre": "Maple Huevo Color 2Kg", "categoria": "Huevos", "grupo": "Huevos", "unidad": "unidad", "costoBulto": 4930.0, "kgBulto": 1.0, "costoUnit": 4930.0, "costoReal": 5232.47, "precioD": 6800, "precioM": 6200, "margenD": 23.0, "margenM": 15.0, "activo": true}, {"nombre": "Melon", "categoria": "Frutas", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "unidad", "costoBulto": 18000.0, "kgBulto": 6.0, "costoUnit": 3000.0, "costoReal": 3296.7, "precioD": 6200, "precioM": 4200, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Menta", "categoria": "Hojas verdes", "grupo": "Hojas / Alta merma (verdes)", "unidad": "unidad", "costoBulto": 3000.0, "kgBulto": 1.0, "costoUnit": 3000.0, "costoReal": 3688.37, "precioD": 7700, "precioM": 5000, "margenD": 52.0, "margenM": 25.0, "activo": true}, {"nombre": "Miel x 250Gr", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "unidad", "costoBulto": 2652.0, "kgBulto": 1.0, "costoUnit": 2652.0, "costoReal": 2706.12, "precioD": 4400, "precioM": 3500, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Miel x 500Gr", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "unidad", "costoBulto": 3366.0, "kgBulto": 1.0, "costoUnit": 3366.0, "costoReal": 3434.69, "precioD": 5600, "precioM": 4500, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Miel Crema x 250Gr", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "unidad", "costoBulto": 2652.0, "kgBulto": 1.0, "costoUnit": 2652.0, "costoReal": 2706.12, "precioD": 4400, "precioM": 3500, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Miel Crema x 500Gr", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "unidad", "costoBulto": 4080.0, "kgBulto": 1.0, "costoUnit": 4080.0, "costoReal": 4163.27, "precioD": 6800, "precioM": 5400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Mix Energizante", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Mix Repollos Rallados", "categoria": "Bandejas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 1580.0, "kgBulto": 1.0, "costoUnit": 1580.0, "costoReal": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Naranja Jugo", "categoria": "Frutas", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 14000.0, "kgBulto": 20.0, "costoUnit": 700.0, "costoReal": 744.68, "precioD": 1400, "precioM": 1000, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Naranja Ombligo", "categoria": "Frutas", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "kg", "costoBulto": 25000.0, "kgBulto": 16.0, "costoUnit": 1562.5, "costoReal": 1717.03, "precioD": 3200, "precioM": 2200, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Nesquick x 500g", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Nueces", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Nuez Moscada", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1200.0, "kgBulto": 1.0, "costoUnit": 1200.0, "costoReal": 1212.12, "precioD": 1900, "precioM": 1500, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Oregano", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 850.0, "kgBulto": 1.0, "costoUnit": 850.0, "costoReal": 858.59, "precioD": 1400, "precioM": 1100, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Palta Hass", "categoria": "Frutas", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "unidad", "costoBulto": 55000.0, "kgBulto": 84.0, "costoUnit": 654.7619048, "costoReal": 696.56, "precioD": 1300, "precioM": 900, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Palta Torres", "categoria": "Frutas", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "unidad", "costoBulto": 20000.0, "kgBulto": 26.0, "costoUnit": 769.2307692, "costoReal": 818.33, "precioD": 1500, "precioM": 1000, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Papa Cepillada", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 11000.0, "kgBulto": 16.0, "costoUnit": 687.5, "costoReal": 731.38, "precioD": 1400, "precioM": 900, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Papá Lavada", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 4800.0, "kgBulto": 16.0, "costoUnit": 300.0, "costoReal": 319.15, "precioD": 600, "precioM": 400, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Pasta de mani", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Pepino", "categoria": "Frutas", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "kg", "costoBulto": 9000.0, "kgBulto": 8.0, "costoUnit": 1125.0, "costoReal": 1236.26, "precioD": 2300, "precioM": 1600, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Pera", "categoria": "Frutas", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "kg", "costoBulto": 28000.0, "kgBulto": 16.0, "costoUnit": 1750.0, "costoReal": 1923.08, "precioD": 3600, "precioM": 2500, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Perejil", "categoria": "Hojas verdes", "grupo": "Hojas / Alta merma (verdes)", "unidad": "unidad", "costoBulto": 3000.0, "kgBulto": 3.0, "costoUnit": 1000.0, "costoReal": 1362.79, "precioD": 2900, "precioM": 1900, "margenD": 52.0, "margenM": 25.0, "activo": true}, {"nombre": "Pimenton Dulce", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 600.0, "kgBulto": 1.0, "costoUnit": 600.0, "costoReal": 606.06, "precioD": 1000, "precioM": 800, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Pimienta Blanca", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1400.0, "kgBulto": 1.0, "costoUnit": 1400.0, "costoReal": 1414.14, "precioD": 2200, "precioM": 1800, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Pimiento Amarillo", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 20000.0, "kgBulto": 8.0, "costoUnit": 2500.0, "costoReal": 2659.57, "precioD": 4900, "precioM": 3300, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Pimiento Rojo", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 20000.0, "kgBulto": 8.0, "costoUnit": 2500.0, "costoReal": 2659.57, "precioD": 4900, "precioM": 3300, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Pimiento Rojo Congelado", "categoria": "Congelados", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 1580.0, "kgBulto": 1.0, "costoUnit": 1580.0, "costoReal": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Frutilla Congelada", "categoria": "Congelados", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 1580.0, "kgBulto": 1.0, "costoUnit": 1580.0, "costoReal": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Pimiento Verde", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 13000.0, "kgBulto": 8.0, "costoUnit": 1625.0, "costoReal": 1728.72, "precioD": 3200, "precioM": 2200, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Pimiento Verde Congelado", "categoria": "Congelados", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 1580.0, "kgBulto": 1.0, "costoUnit": 1580.0, "costoReal": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Pimientos Mix Congelado", "categoria": "Congelados", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 1580.0, "kgBulto": 1.0, "costoUnit": 1580.0, "costoReal": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Pitaya", "categoria": "Frutas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 2000.0, "kgBulto": 12.0, "costoUnit": 166.6666667, "costoReal": 325.44, "precioD": 700, "precioM": 500, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Polvo para Hornear", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Pomelo Rojo", "categoria": "Frutas", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "kg", "costoBulto": 15000.0, "kgBulto": 16.0, "costoUnit": 937.5, "costoReal": 1030.22, "precioD": 2000, "precioM": 1300, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Porotos Blancos", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Porotos Negros", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Provenzal", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 850.0, "kgBulto": 1.0, "costoUnit": 850.0, "costoReal": 858.59, "precioD": 1400, "precioM": 1100, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Quinoa Pop", "categoria": "Dietetica", "grupo": "Despensa saludable (granola/frutos secos)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 38.0, "margenM": 22.0, "activo": true}, {"nombre": "Rabanito", "categoria": "Verduras", "grupo": "Hojas / Alta merma (verdes)", "unidad": "unidad", "costoBulto": 1500.0, "kgBulto": 1.0, "costoUnit": 1500.0, "costoReal": 1944.19, "precioD": 4100, "precioM": 2600, "margenD": 52.0, "margenM": 25.0, "activo": true}, {"nombre": "Remolacha", "categoria": "Verduras", "grupo": "Hojas / Alta merma (verdes)", "unidad": "kg", "costoBulto": 3333.333333, "kgBulto": 3.0, "costoUnit": 1111.111111, "costoReal": 1491.99, "precioD": 3200, "precioM": 2000, "margenD": 52.0, "margenM": 25.0, "activo": true}, {"nombre": "Repollito Brusela", "categoria": "Verduras", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 3500.0, "kgBulto": 1.0, "costoUnit": 3500.0, "costoReal": 3834.21, "precioD": 7700, "precioM": 5000, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Repollo Blanco", "categoria": "Verduras", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 1666.666667, "kgBulto": 1.0, "costoUnit": 1666.666667, "costoReal": 1683.5, "precioD": 2600, "precioM": 2100, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Repollo Blanco Rallado", "categoria": "Bandejas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 1580.0, "kgBulto": 1.0, "costoUnit": 1580.0, "costoReal": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Repollo Morado", "categoria": "Verduras", "grupo": "Bebidas (agua/gaseosas)", "unidad": "unidad", "costoBulto": 2000.0, "kgBulto": 1.0, "costoUnit": 2000.0, "costoReal": 2020.2, "precioD": 3100, "precioM": 2500, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Repollo Morado Rallado", "categoria": "Bandejas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 1580.0, "kgBulto": 1.0, "costoUnit": 1580.0, "costoReal": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Rucula", "categoria": "Hojas verdes", "grupo": "Hojas / Alta merma (verdes)", "unidad": "unidad", "costoBulto": 8000.0, "kgBulto": 12.0, "costoUnit": 666.6666667, "costoReal": 975.19, "precioD": 2100, "precioM": 1400, "margenD": 52.0, "margenM": 25.0, "activo": true}, {"nombre": "Sandia", "categoria": "Frutas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 6000.0, "kgBulto": 1.0, "costoUnit": 6000.0, "costoReal": 6465.79, "precioD": 13000, "precioM": 8300, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Tomate Perita", "categoria": "Verduras", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "kg", "costoBulto": 42000.0, "kgBulto": 22.0, "costoUnit": 1909.090909, "costoReal": 2097.9, "precioD": 3900, "precioM": 2700, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Tomate Redondo", "categoria": "Verduras", "grupo": "Frutas volumen (banana/manzana/naranja)", "unidad": "kg", "costoBulto": 38000.0, "kgBulto": 18.0, "costoUnit": 2111.111111, "costoReal": 2319.9, "precioD": 4300, "precioM": 2900, "margenD": 46.0, "margenM": 20.0, "activo": true}, {"nombre": "Tomate triturado arcor x500gr", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Tomate Triturado x 1LT", "categoria": "Almacen", "grupo": "Bebidas (agua/gaseosas)", "unidad": "kg", "costoBulto": 1000.0, "kgBulto": 1.0, "costoUnit": 1000.0, "costoReal": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 34.0, "margenM": 18.0, "activo": true}, {"nombre": "Uva Blanca", "categoria": "Frutas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "kg", "costoBulto": 32000.0, "kgBulto": 10.0, "costoUnit": 3200.0, "costoReal": 3518.42, "precioD": 7100, "precioM": 4600, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Uva Morada", "categoria": "Frutas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "kg", "costoBulto": 33000.0, "kgBulto": 16.0, "costoUnit": 2062.5, "costoReal": 2321.05, "precioD": 4700, "precioM": 3000, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Verdeo Planta", "categoria": "Hojas verdes", "grupo": "Hojas / Alta merma (verdes)", "unidad": "unidad", "costoBulto": 3500.0, "kgBulto": 1.5, "costoUnit": 2333.333333, "costoReal": 2913.18, "precioD": 6100, "precioM": 3900, "margenD": 52.0, "margenM": 25.0, "activo": true}, {"nombre": "Verdura para Sopa", "categoria": "Bandejas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 1580.0, "kgBulto": 1.0, "costoUnit": 1580.0, "costoReal": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Zanahoria", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 9000.0, "kgBulto": 10.0, "costoUnit": 900.0, "costoReal": 957.45, "precioD": 1800, "precioM": 1200, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Zanahoria Rallada", "categoria": "Bandejas", "grupo": "Especialidades / Premium (champi/berries/palta)", "unidad": "unidad", "costoBulto": 1580.0, "kgBulto": 1.0, "costoUnit": 1580.0, "costoReal": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 50.0, "margenM": 22.0, "activo": true}, {"nombre": "Zapallito Verde", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 25000.0, "kgBulto": 12.0, "costoUnit": 2083.333333, "costoReal": 2216.31, "precioD": 4100, "precioM": 2800, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Zapallo Criollo", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 4000.0, "kgBulto": 8.0, "costoUnit": 500.0, "costoReal": 531.91, "precioD": 1000, "precioM": 700, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Zapallo Cuza", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "kg", "costoBulto": 28000.0, "kgBulto": 16.0, "costoUnit": 1750.0, "costoReal": 1861.7, "precioD": 3400, "precioM": 2300, "margenD": 45.0, "margenM": 18.0, "activo": true}, {"nombre": "Zapallo Negro", "categoria": "Verduras", "grupo": "Commodities (papa/cebolla/zanahoria)", "unidad": "unidad", "costoBulto": 12000.0, "kgBulto": 12.0, "costoUnit": 1000.0, "costoReal": 1063.83, "precioD": 2000, "precioM": 1300, "margenD": 45.0, "margenM": 18.0, "activo": true}], "items": [{"item": "Espinaca Invierno", "producto": "Espinaca Invierno", "categoria": "Hojas verdes", "variable": "1 unidad", "costo": 1944.19, "precioD": 4100, "precioM": 2600, "margenD": 52.6, "margenM": 25.2}, {"item": "Tomate Redondo - 1 kg", "producto": "Tomate Redondo", "categoria": "Verduras", "variable": "1 kg", "costo": 2319.9, "precioD": 4300, "precioM": 2900, "margenD": 46.0, "margenM": 20.0}, {"item": "Tomate Redondo - 500 g", "producto": "Tomate Redondo", "categoria": "Verduras", "variable": "500 g", "costo": 1159.95, "precioD": 2200, "precioM": 1500, "margenD": 47.3, "margenM": 22.7}, {"item": "Dulce de Ciruela (Casero)", "producto": "Dulce de Ciruela (Casero)", "categoria": "Dietetica", "variable": "1 unidad", "costo": 3434.69, "precioD": 5600, "precioM": 4500, "margenD": 38.7, "margenM": 23.7}, {"item": "Chipá congelado", "producto": "Chipá congelado", "categoria": "Congelados", "variable": "1 unidad", "costo": 5676.32, "precioD": 11400, "precioM": 7300, "margenD": 50.2, "margenM": 22.2}, {"item": "Miel x 250Gr", "producto": "Miel x 250Gr", "categoria": "Dietetica", "variable": "1 unidad", "costo": 2706.12, "precioD": 4400, "precioM": 3500, "margenD": 38.5, "margenM": 22.7}, {"item": "Mani con Cascara", "producto": "Mani con Cascara", "categoria": "Almacen", "variable": "1 unidad", "costo": 1196.81, "precioD": 2200, "precioM": 1500, "margenD": 45.6, "margenM": 20.2}, {"item": "Maple Huevo Blanco 2 Kg - 1 maple", "producto": "Maple Huevo Blanco 2 Kg", "categoria": "Huevos", "variable": "1 maple", "costo": 4093.3, "precioD": 5400, "precioM": 4900, "margenD": 24.2, "margenM": 16.5}, {"item": "Frutos Rojos Congelados", "producto": "Frutos Rojos Congelados", "categoria": "Congelados", "variable": "1 unidad", "costo": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 51.0, "margenM": 24.5}, {"item": "Arandanos Congelados", "producto": "Arandanos Congelados", "categoria": "Congelados", "variable": "1 unidad", "costo": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 51.0, "margenM": 24.5}, {"item": "Frutilla Congelada", "producto": "Frutilla Congelada", "categoria": "Congelados", "variable": "1 unidad", "costo": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 51.0, "margenM": 24.5}, {"item": "Verdura para Sopa", "producto": "Verdura para Sopa", "categoria": "Bandejas", "variable": "1 unidad", "costo": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 51.0, "margenM": 24.5}, {"item": "Pimientos Mix Congelado", "producto": "Pimientos Mix Congelado", "categoria": "Congelados", "variable": "1 unidad", "costo": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 51.0, "margenM": 24.5}, {"item": "Pimiento Verde Congelado", "producto": "Pimiento Verde Congelado", "categoria": "Congelados", "variable": "1 unidad", "costo": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 51.0, "margenM": 24.5}, {"item": "Pimiento Rojo Congelado", "producto": "Pimiento Rojo Congelado", "categoria": "Congelados", "variable": "1 unidad", "costo": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 51.0, "margenM": 24.5}, {"item": "Mix Repollos Rallados", "producto": "Mix Repollos Rallados", "categoria": "Bandejas", "variable": "1 unidad", "costo": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 51.0, "margenM": 24.5}, {"item": "Repollo Morado Rallado", "producto": "Repollo Morado Rallado", "categoria": "Bandejas", "variable": "1 unidad", "costo": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 51.0, "margenM": 24.5}, {"item": "Repollo Blanco Rallado", "producto": "Repollo Blanco Rallado", "categoria": "Bandejas", "variable": "1 unidad", "costo": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 51.0, "margenM": 24.5}, {"item": "Zanahoria Rallada", "producto": "Zanahoria Rallada", "categoria": "Bandejas", "variable": "1 unidad", "costo": 1813.16, "precioD": 3700, "precioM": 2400, "margenD": 51.0, "margenM": 24.5}, {"item": "COMBO FULL", "producto": "COMBO FULL", "categoria": "Combos", "variable": "1 unidad", "costo": 150.0, "precioD": 300, "precioM": 200, "margenD": 50.0, "margenM": 25.0}, {"item": "COMBO CLASICO", "producto": "COMBO CLASICO", "categoria": "Combos", "variable": "1 unidad", "costo": 150.0, "precioD": 300, "precioM": 200, "margenD": 50.0, "margenM": 25.0}, {"item": "Nuez Moscada", "producto": "Nuez Moscada", "categoria": "Almacen", "variable": "1 unidad", "costo": 1212.12, "precioD": 1900, "precioM": 1500, "margenD": 36.2, "margenM": 19.2}, {"item": "Bicarbonato", "producto": "Bicarbonato", "categoria": "Almacen", "variable": "1 unidad", "costo": 707.07, "precioD": 1100, "precioM": 900, "margenD": 35.7, "margenM": 21.4}, {"item": "Pimenton Dulce", "producto": "Pimenton Dulce", "categoria": "Almacen", "variable": "1 unidad", "costo": 606.06, "precioD": 1000, "precioM": 800, "margenD": 39.4, "margenM": 24.2}, {"item": "Laurel", "producto": "Laurel", "categoria": "Almacen", "variable": "1 unidad", "costo": 1212.12, "precioD": 1900, "precioM": 1500, "margenD": 36.2, "margenM": 19.2}, {"item": "Aji Molido", "producto": "Aji Molido", "categoria": "Almacen", "variable": "1 unidad", "costo": 606.06, "precioD": 1000, "precioM": 800, "margenD": 39.4, "margenM": 24.2}, {"item": "Chimichurri", "producto": "Chimichurri", "categoria": "Almacen", "variable": "1 unidad", "costo": 707.07, "precioD": 1100, "precioM": 900, "margenD": 35.7, "margenM": 21.4}, {"item": "Pimienta Blanca", "producto": "Pimienta Blanca", "categoria": "Almacen", "variable": "1 unidad", "costo": 1414.14, "precioD": 2200, "precioM": 1800, "margenD": 35.7, "margenM": 21.4}, {"item": "Condimento para Arroz", "producto": "Condimento para Arroz", "categoria": "Almacen", "variable": "1 unidad", "costo": 606.06, "precioD": 1000, "precioM": 800, "margenD": 39.4, "margenM": 24.2}, {"item": "Condimento para Pizza", "producto": "Condimento para Pizza", "categoria": "Almacen", "variable": "1 unidad", "costo": 606.06, "precioD": 1000, "precioM": 800, "margenD": 39.4, "margenM": 24.2}, {"item": "Provenzal", "producto": "Provenzal", "categoria": "Almacen", "variable": "1 unidad", "costo": 858.59, "precioD": 1400, "precioM": 1100, "margenD": 38.7, "margenM": 21.9}, {"item": "Oregano", "producto": "Oregano", "categoria": "Almacen", "variable": "1 unidad", "costo": 858.59, "precioD": 1400, "precioM": 1100, "margenD": 38.7, "margenM": 21.9}, {"item": "Levadura Seca", "producto": "Levadura Seca", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Tomate triturado arcor x500gr - 500 g", "producto": "Tomate triturado arcor x500gr", "categoria": "Almacen", "variable": "500 g", "costo": 505.05, "precioD": 800, "precioM": 700, "margenD": 36.9, "margenM": 27.8}, {"item": "Porotos Negros", "producto": "Porotos Negros", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Porotos Blancos", "producto": "Porotos Blancos", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Polvo para Hornear", "producto": "Polvo para Hornear", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Maiz pisingayo", "producto": "Maiz pisingayo", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Lentejas", "producto": "Lentejas", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Lata Tomate", "producto": "Lata Tomate", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Tomate Triturado x 1LT - 1 lt", "producto": "Tomate Triturado x 1LT", "categoria": "Almacen", "variable": "1 lt", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Agua", "producto": "Agua", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Lata Schweps", "producto": "Lata Schweps", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Lata Coca Cola - Zero", "producto": "Lata Coca Cola - Zero", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Lata Coca Cola", "producto": "Lata Coca Cola", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Dulce de Leche", "producto": "Dulce de Leche", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Garbanzos", "producto": "Garbanzos", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Nesquick x 500g - 500 g", "producto": "Nesquick x 500g", "categoria": "Almacen", "variable": "500 g", "costo": 505.05, "precioD": 800, "precioM": 700, "margenD": 36.9, "margenM": 27.8}, {"item": "Azucar x1KG - 1 kg", "producto": "Azucar x1KG", "categoria": "Almacen", "variable": "1 kg", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Hileret x 50", "producto": "Hileret x 50", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Edulcorante", "producto": "Edulcorante", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Leche LV descremada", "producto": "Leche LV descremada", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Leche LV comun", "producto": "Leche LV comun", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Cafe c/leche", "producto": "Cafe c/leche", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Cafe Dolca", "producto": "Cafe Dolca", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Aceite de Oliva 2°", "producto": "Aceite de Oliva 2°", "categoria": "Almacen", "variable": "1 unidad", "costo": 3333.33, "precioD": 5100, "precioM": 4100, "margenD": 34.6, "margenM": 18.7}, {"item": "Aceite de Oliva 1°", "producto": "Aceite de Oliva 1°", "categoria": "Almacen", "variable": "1 unidad", "costo": 1010.1, "precioD": 1600, "precioM": 1300, "margenD": 36.9, "margenM": 22.3}, {"item": "Harina de Avena - 1 kg", "producto": "Harina de Avena", "categoria": "Dietetica", "variable": "1 kg", "costo": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 40.0, "margenM": 27.1}, {"item": "Mix Energizante - 1 kg", "producto": "Mix Energizante", "categoria": "Dietetica", "variable": "1 kg", "costo": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 40.0, "margenM": 27.1}, {"item": "Pasta de mani", "producto": "Pasta de mani", "categoria": "Dietetica", "variable": "1 unidad", "costo": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 40.0, "margenM": 27.1}, {"item": "Aritos Frutales - 375 g", "producto": "Aritos Frutales", "categoria": "Dietetica", "variable": "375 g", "costo": 382.65, "precioD": 700, "precioM": 500, "margenD": 45.3, "margenM": 23.5}, {"item": "Bolitas de Chocolate - 375 g", "producto": "Bolitas de Chocolate", "categoria": "Dietetica", "variable": "375 g", "costo": 382.65, "precioD": 700, "precioM": 500, "margenD": 45.3, "margenM": 23.5}, {"item": "Copos Azucarados - 375 g", "producto": "Copos Azucarados", "categoria": "Dietetica", "variable": "375 g", "costo": 382.65, "precioD": 700, "precioM": 500, "margenD": 45.3, "margenM": 23.5}, {"item": "Galleta de Arroz Integral", "producto": "Galleta de Arroz Integral", "categoria": "Dietetica", "variable": "1 unidad", "costo": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 40.0, "margenM": 27.1}, {"item": "Galleta de Arroz Salada", "producto": "Galleta de Arroz Salada", "categoria": "Dietetica", "variable": "1 unidad", "costo": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 40.0, "margenM": 27.1}, {"item": "Galleta de Arroz Dulce", "producto": "Galleta de Arroz Dulce", "categoria": "Dietetica", "variable": "1 unidad", "costo": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 40.0, "margenM": 27.1}, {"item": "Quinoa Pop - 500 g", "producto": "Quinoa Pop", "categoria": "Dietetica", "variable": "500 g", "costo": 510.2, "precioD": 900, "precioM": 700, "margenD": 43.3, "margenM": 27.1}, {"item": "Granola c/miel - 1 kg", "producto": "Granola c/miel", "categoria": "Dietetica", "variable": "1 kg", "costo": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 40.0, "margenM": 27.1}, {"item": "Banana Deshidratada (chips) - 375 g", "producto": "Banana Deshidratada (chips)", "categoria": "Dietetica", "variable": "375 g", "costo": 382.65, "precioD": 700, "precioM": 500, "margenD": 45.3, "margenM": 23.5}, {"item": "Almohaditas Chocolate - 375 g", "producto": "Almohaditas Chocolate", "categoria": "Dietetica", "variable": "375 g", "costo": 382.65, "precioD": 700, "precioM": 500, "margenD": 45.3, "margenM": 23.5}, {"item": "Almohaditas Limon - 375 g", "producto": "Almohaditas Limon", "categoria": "Dietetica", "variable": "375 g", "costo": 382.65, "precioD": 700, "precioM": 500, "margenD": 45.3, "margenM": 23.5}, {"item": "Almohaditas Frutilla - 375 g", "producto": "Almohaditas Frutilla", "categoria": "Dietetica", "variable": "375 g", "costo": 382.65, "precioD": 700, "precioM": 500, "margenD": 45.3, "margenM": 23.5}, {"item": "Nueces - 1 kg", "producto": "Nueces", "categoria": "Dietetica", "variable": "1 kg", "costo": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 40.0, "margenM": 27.1}, {"item": "Almendras - 1 kg", "producto": "Almendras", "categoria": "Dietetica", "variable": "1 kg", "costo": 1020.41, "precioD": 1700, "precioM": 1400, "margenD": 40.0, "margenM": 27.1}, {"item": "Avena Instantanea - 500 g", "producto": "Avena Instantanea", "categoria": "Dietetica", "variable": "500 g", "costo": 510.2, "precioD": 900, "precioM": 700, "margenD": 43.3, "margenM": 27.1}, {"item": "Miel x 500Gr", "producto": "Miel x 500Gr", "categoria": "Dietetica", "variable": "1 unidad", "costo": 3434.69, "precioD": 5600, "precioM": 4500, "margenD": 38.7, "margenM": 23.7}, {"item": "Miel Crema x 250Gr", "producto": "Miel Crema x 250Gr", "categoria": "Dietetica", "variable": "1 unidad", "costo": 2706.12, "precioD": 4400, "precioM": 3500, "margenD": 38.5, "margenM": 22.7}, {"item": "Miel Crema x 500Gr", "producto": "Miel Crema x 500Gr", "categoria": "Dietetica", "variable": "1 unidad", "costo": 4163.27, "precioD": 6800, "precioM": 5400, "margenD": 38.8, "margenM": 22.9}, {"item": "Mandarina Okitzu - 1 kg", "producto": "Mandarina Okitzu", "categoria": "Frutas", "variable": "1 kg", "costo": 1428.57, "precioD": 2700, "precioM": 1800, "margenD": 47.1, "margenM": 20.6}, {"item": "Mandarina Okitzu - 500 g", "producto": "Mandarina Okitzu", "categoria": "Frutas", "variable": "500 g", "costo": 714.29, "precioD": 1400, "precioM": 900, "margenD": 49.0, "margenM": 20.6}, {"item": "Maple Huevo Blanco Chico - 1 maple", "producto": "Maple Huevo Blanco Chico", "categoria": "Huevos", "variable": "1 maple", "costo": 5132.82, "precioD": 6700, "precioM": 6100, "margenD": 23.4, "margenM": 15.9}, {"item": "Zapallo Negro", "producto": "Zapallo Negro", "categoria": "Verduras", "variable": "1 unidad", "costo": 1063.83, "precioD": 2000, "precioM": 1300, "margenD": 46.8, "margenM": 18.2}, {"item": "Zapallo Negro - 1/2 unidad", "producto": "Zapallo Negro", "categoria": "Verduras", "variable": "1/2 unidad", "costo": 2127.66, "precioD": 3900, "precioM": 2600, "margenD": 45.4, "margenM": 18.2}, {"item": "Zapallo Cuza - 1 kg", "producto": "Zapallo Cuza", "categoria": "Verduras", "variable": "1 kg", "costo": 1861.7, "precioD": 3400, "precioM": 2300, "margenD": 45.2, "margenM": 19.1}, {"item": "Zapallo Cuza - 500 g", "producto": "Zapallo Cuza", "categoria": "Verduras", "variable": "500 g", "costo": 930.85, "precioD": 1700, "precioM": 1200, "margenD": 45.2, "margenM": 22.4}, {"item": "Zapallo Criollo - 1 kg", "producto": "Zapallo Criollo", "categoria": "Verduras", "variable": "1 kg", "costo": 531.91, "precioD": 1000, "precioM": 700, "margenD": 46.8, "margenM": 24.0}, {"item": "Zapallo Criollo - 500 g", "producto": "Zapallo Criollo", "categoria": "Verduras", "variable": "500 g", "costo": 265.96, "precioD": 500, "precioM": 400, "margenD": 46.8, "margenM": 33.5}, {"item": "Zapallito Verde - 1 kg", "producto": "Zapallito Verde", "categoria": "Verduras", "variable": "1 kg", "costo": 2216.31, "precioD": 4100, "precioM": 2800, "margenD": 45.9, "margenM": 20.8}, {"item": "Zapallito Verde - 500 g", "producto": "Zapallito Verde", "categoria": "Verduras", "variable": "500 g", "costo": 1108.16, "precioD": 2100, "precioM": 1400, "margenD": 47.2, "margenM": 20.8}, {"item": "Zanahoria - 1 kg", "producto": "Zanahoria", "categoria": "Verduras", "variable": "1 kg", "costo": 957.45, "precioD": 1800, "precioM": 1200, "margenD": 46.8, "margenM": 20.2}, {"item": "Zanahoria - 500 g", "producto": "Zanahoria", "categoria": "Verduras", "variable": "500 g", "costo": 478.72, "precioD": 900, "precioM": 600, "margenD": 46.8, "margenM": 20.2}, {"item": "Tomate Perita - 1 kg", "producto": "Tomate Perita", "categoria": "Verduras", "variable": "1 kg", "costo": 2097.9, "precioD": 3900, "precioM": 2700, "margenD": 46.2, "margenM": 22.3}, {"item": "Tomate Perita - 500 g", "producto": "Tomate Perita", "categoria": "Verduras", "variable": "500 g", "costo": 1048.95, "precioD": 2000, "precioM": 1400, "margenD": 47.6, "margenM": 25.1}, {"item": "Repollo Morado", "producto": "Repollo Morado", "categoria": "Verduras", "variable": "1 unidad", "costo": 2020.2, "precioD": 3100, "precioM": 2500, "margenD": 34.8, "margenM": 19.2}, {"item": "Repollo Morado - 1/2 unidad", "producto": "Repollo Morado", "categoria": "Verduras", "variable": "1/2 unidad", "costo": 4040.4, "precioD": 6200, "precioM": 5000, "margenD": 34.8, "margenM": 19.2}, {"item": "Repollo Blanco", "producto": "Repollo Blanco", "categoria": "Verduras", "variable": "1 unidad", "costo": 1683.5, "precioD": 2600, "precioM": 2100, "margenD": 35.2, "margenM": 19.8}, {"item": "Repollo Blanco - 1/2 unidad", "producto": "Repollo Blanco", "categoria": "Verduras", "variable": "1/2 unidad", "costo": 3367.0, "precioD": 5200, "precioM": 4200, "margenD": 35.2, "margenM": 19.8}, {"item": "Repollito Brusela", "producto": "Repollito Brusela", "categoria": "Verduras", "variable": "1 unidad", "costo": 3834.21, "precioD": 7700, "precioM": 5000, "margenD": 50.2, "margenM": 23.3}, {"item": "Remolacha - 1 kg", "producto": "Remolacha", "categoria": "Verduras", "variable": "1 kg", "costo": 1491.99, "precioD": 3200, "precioM": 2000, "margenD": 53.4, "margenM": 25.4}, {"item": "Remolacha - 500 g", "producto": "Remolacha", "categoria": "Verduras", "variable": "500 g", "costo": 745.99, "precioD": 1600, "precioM": 1000, "margenD": 53.4, "margenM": 25.4}, {"item": "Rabanito", "producto": "Rabanito", "categoria": "Verduras", "variable": "1 unidad", "costo": 1944.19, "precioD": 4100, "precioM": 2600, "margenD": 52.6, "margenM": 25.2}, {"item": "Pimiento Verde - 1 kg", "producto": "Pimiento Verde", "categoria": "Verduras", "variable": "1 kg", "costo": 1728.72, "precioD": 3200, "precioM": 2200, "margenD": 46.0, "margenM": 21.4}, {"item": "Pimiento Verde", "producto": "Pimiento Verde", "categoria": "Verduras", "variable": "1 unidad", "costo": 1728.72, "precioD": 3200, "precioM": 2200, "margenD": 46.0, "margenM": 21.4}, {"item": "Pimiento Verde - 500 g", "producto": "Pimiento Verde", "categoria": "Verduras", "variable": "500 g", "costo": 864.36, "precioD": 1600, "precioM": 1100, "margenD": 46.0, "margenM": 21.4}, {"item": "Pimiento Rojo - 1 kg", "producto": "Pimiento Rojo", "categoria": "Verduras", "variable": "1 kg", "costo": 2659.57, "precioD": 4900, "precioM": 3300, "margenD": 45.7, "margenM": 19.4}, {"item": "Pimiento Rojo", "producto": "Pimiento Rojo", "categoria": "Verduras", "variable": "1 unidad", "costo": 2659.57, "precioD": 4900, "precioM": 3300, "margenD": 45.7, "margenM": 19.4}, {"item": "Pimiento Rojo - 500 g", "producto": "Pimiento Rojo", "categoria": "Verduras", "variable": "500 g", "costo": 1329.79, "precioD": 2500, "precioM": 1700, "margenD": 46.8, "margenM": 21.8}, {"item": "Pimiento Amarillo - 1 kg", "producto": "Pimiento Amarillo", "categoria": "Verduras", "variable": "1 kg", "costo": 2659.57, "precioD": 4900, "precioM": 3300, "margenD": 45.7, "margenM": 19.4}, {"item": "Pimiento Amarillo", "producto": "Pimiento Amarillo", "categoria": "Verduras", "variable": "1 unidad", "costo": 2659.57, "precioD": 4900, "precioM": 3300, "margenD": 45.7, "margenM": 19.4}, {"item": "Pimiento Amarillo - 500 g", "producto": "Pimiento Amarillo", "categoria": "Verduras", "variable": "500 g", "costo": 1329.79, "precioD": 2500, "precioM": 1700, "margenD": 46.8, "margenM": 21.8}, {"item": "Pepino - 1 kg", "producto": "Pepino", "categoria": "Frutas", "variable": "1 kg", "costo": 1236.26, "precioD": 2300, "precioM": 1600, "margenD": 46.2, "margenM": 22.7}, {"item": "Pepino - 500 g", "producto": "Pepino", "categoria": "Frutas", "variable": "500 g", "costo": 618.13, "precioD": 1200, "precioM": 800, "margenD": 48.5, "margenM": 22.7}, {"item": "Papá Lavada - 1 kg", "producto": "Papá Lavada", "categoria": "Verduras", "variable": "1 kg", "costo": 319.15, "precioD": 600, "precioM": 400, "margenD": 46.8, "margenM": 20.2}, {"item": "Papá Lavada - 500 g", "producto": "Papá Lavada", "categoria": "Verduras", "variable": "500 g", "costo": 159.57, "precioD": 300, "precioM": 200, "margenD": 46.8, "margenM": 20.2}, {"item": "Papa Cepillada - 1 kg", "producto": "Papa Cepillada", "categoria": "Verduras", "variable": "1 kg", "costo": 731.38, "precioD": 1400, "precioM": 900, "margenD": 47.8, "margenM": 18.7}, {"item": "Papa Cepillada - 500 g", "producto": "Papa Cepillada", "categoria": "Verduras", "variable": "500 g", "costo": 365.69, "precioD": 700, "precioM": 500, "margenD": 47.8, "margenM": 26.9}, {"item": "Jengibre - 125 g", "producto": "Jengibre", "categoria": "Verduras", "variable": "125 g", "costo": 1063.83, "precioD": 2000, "precioM": 1300, "margenD": 46.8, "margenM": 18.2}, {"item": "Jengibre - 250 g", "producto": "Jengibre", "categoria": "Verduras", "variable": "250 g", "costo": 2127.66, "precioD": 3900, "precioM": 2600, "margenD": 45.4, "margenM": 18.2}, {"item": "Esparragos", "producto": "Esparragos", "categoria": "Verduras", "variable": "1 unidad", "costo": 2255.26, "precioD": 4600, "precioM": 2900, "margenD": 51.0, "margenM": 22.2}, {"item": "Curcuma - 125 g", "producto": "Curcuma", "categoria": "Verduras", "variable": "125 g", "costo": 1329.79, "precioD": 2500, "precioM": 1700, "margenD": 46.8, "margenM": 21.8}, {"item": "Curcuma - 250 g", "producto": "Curcuma", "categoria": "Verduras", "variable": "250 g", "costo": 2659.57, "precioD": 4900, "precioM": 3300, "margenD": 45.7, "margenM": 19.4}, {"item": "Coliflor", "producto": "Coliflor", "categoria": "Verduras", "variable": "1 unidad", "costo": 1063.83, "precioD": 2000, "precioM": 1300, "margenD": 46.8, "margenM": 18.2}, {"item": "Choclo", "producto": "Choclo", "categoria": "Verduras", "variable": "1 unidad", "costo": 531.91, "precioD": 1000, "precioM": 700, "margenD": 46.8, "margenM": 24.0}, {"item": "Cherry - 1 kg", "producto": "Cherry", "categoria": "Verduras", "variable": "1 kg", "costo": 3097.37, "precioD": 6200, "precioM": 4000, "margenD": 50.0, "margenM": 22.6}, {"item": "Cherry - 500 g", "producto": "Cherry", "categoria": "Verduras", "variable": "500 g", "costo": 1548.68, "precioD": 3100, "precioM": 2000, "margenD": 50.0, "margenM": 22.6}, {"item": "Cherry - 250 g", "producto": "Cherry", "categoria": "Verduras", "variable": "250 g", "costo": 774.34, "precioD": 1600, "precioM": 1000, "margenD": 51.6, "margenM": 22.6}, {"item": "Chaucha Fina - 500 g", "producto": "Chaucha Fina", "categoria": "Verduras", "variable": "500 g", "costo": 2197.8, "precioD": 4100, "precioM": 2800, "margenD": 46.4, "margenM": 21.5}, {"item": "Chaucha Fina - 250 g", "producto": "Chaucha Fina", "categoria": "Verduras", "variable": "250 g", "costo": 1098.9, "precioD": 2100, "precioM": 1400, "margenD": 47.7, "margenM": 21.5}, {"item": "Champignon - 200 g", "producto": "Champignon", "categoria": "Verduras", "variable": "200 g", "costo": 3617.02, "precioD": 6600, "precioM": 4500, "margenD": 45.2, "margenM": 19.6}, {"item": "Cebolla - 1 kg", "producto": "Cebolla", "categoria": "Verduras", "variable": "1 kg", "costo": 797.87, "precioD": 1500, "precioM": 1000, "margenD": 46.8, "margenM": 20.2}, {"item": "Cebolla - 500 g", "producto": "Cebolla", "categoria": "Verduras", "variable": "500 g", "costo": 398.94, "precioD": 800, "precioM": 500, "margenD": 50.1, "margenM": 20.2}, {"item": "Cebolla Morada - 1 kg", "producto": "Cebolla Morada", "categoria": "Verduras", "variable": "1 kg", "costo": 1255.26, "precioD": 2600, "precioM": 1700, "margenD": 51.7, "margenM": 26.2}, {"item": "Cebolla Morada - 500 g", "producto": "Cebolla Morada", "categoria": "Verduras", "variable": "500 g", "costo": 627.63, "precioD": 1300, "precioM": 900, "margenD": 51.7, "margenM": 30.3}, {"item": "Calabaza Rayada - 1 kg", "producto": "Calabaza Rayada", "categoria": "Verduras", "variable": "1 kg", "costo": 5319.15, "precioD": 9700, "precioM": 6500, "margenD": 45.2, "margenM": 18.2}, {"item": "Calabaza Rayada - 500 g", "producto": "Calabaza Rayada", "categoria": "Verduras", "variable": "500 g", "costo": 2659.57, "precioD": 4900, "precioM": 3300, "margenD": 45.7, "margenM": 19.4}, {"item": "Brocoli", "producto": "Brocoli", "categoria": "Verduras", "variable": "1 unidad", "costo": 1773.05, "precioD": 3300, "precioM": 2200, "margenD": 46.3, "margenM": 19.4}, {"item": "Boniato - 1 kg", "producto": "Boniato", "categoria": "Verduras", "variable": "1 kg", "costo": 3106.98, "precioD": 6500, "precioM": 4200, "margenD": 52.2, "margenM": 26.0}, {"item": "Boniato - 500 g", "producto": "Boniato", "categoria": "Verduras", "variable": "500 g", "costo": 1553.49, "precioD": 3300, "precioM": 2100, "margenD": 52.9, "margenM": 26.0}, {"item": "Berenjena - 1 kg", "producto": "Berenjena", "categoria": "Verduras", "variable": "1 kg", "costo": 1241.13, "precioD": 2300, "precioM": 1600, "margenD": 46.0, "margenM": 22.4}, {"item": "Berenjena - 500 g", "producto": "Berenjena", "categoria": "Verduras", "variable": "500 g", "costo": 620.57, "precioD": 1200, "precioM": 800, "margenD": 48.3, "margenM": 22.4}, {"item": "Batata - 1 kg", "producto": "Batata", "categoria": "Verduras", "variable": "1 kg", "costo": 1595.74, "precioD": 3000, "precioM": 2000, "margenD": 46.8, "margenM": 20.2}, {"item": "Batata - 500 g", "producto": "Batata", "categoria": "Verduras", "variable": "500 g", "costo": 797.87, "precioD": 1500, "precioM": 1000, "margenD": 46.8, "margenM": 20.2}, {"item": "Apio - 500 g", "producto": "Apio", "categoria": "Hojas verdes", "variable": "500 g", "costo": 1262.79, "precioD": 2700, "precioM": 1700, "margenD": 53.2, "margenM": 25.7}, {"item": "Apio - 250 g", "producto": "Apio", "categoria": "Hojas verdes", "variable": "250 g", "costo": 631.4, "precioD": 1400, "precioM": 900, "margenD": 54.9, "margenM": 29.8}, {"item": "Anco / Calabacin", "producto": "Anco / Calabacin", "categoria": "Verduras", "variable": "1 unidad", "costo": 598.4, "precioD": 1100, "precioM": 800, "margenD": 45.6, "margenM": 25.2}, {"item": "Anco / Calabacin - 1/2 unidad", "producto": "Anco / Calabacin", "categoria": "Verduras", "variable": "1/2 unidad", "costo": 1196.81, "precioD": 2200, "precioM": 1500, "margenD": 45.6, "margenM": 20.2}, {"item": "Alcaucil", "producto": "Alcaucil", "categoria": "Verduras", "variable": "1 unidad", "costo": 676.32, "precioD": 1400, "precioM": 900, "margenD": 51.7, "margenM": 24.9}, {"item": "Ajo", "producto": "Ajo", "categoria": "Verduras", "variable": "1 unidad", "costo": 541.59, "precioD": 1000, "precioM": 700, "margenD": 45.8, "margenM": 22.6}, {"item": "Maple Huevo Color 2Kg - 1 maple", "producto": "Maple Huevo Color 2Kg", "categoria": "Huevos", "variable": "1 maple", "costo": 5232.47, "precioD": 6800, "precioM": 6200, "margenD": 23.1, "margenM": 15.6}, {"item": "Media Docena de Huevos", "producto": "Media Docena de Huevos", "categoria": "Huevos", "variable": "1 unidad", "costo": 151.03, "precioD": 200, "precioM": 200, "margenD": 24.5, "margenM": 24.5}, {"item": "Verdeo Planta", "producto": "Verdeo Planta", "categoria": "Hojas verdes", "variable": "1 unidad", "costo": 2913.18, "precioD": 6100, "precioM": 3900, "margenD": 52.2, "margenM": 25.3}, {"item": "Rucula", "producto": "Rucula", "categoria": "Hojas verdes", "variable": "1 unidad", "costo": 975.19, "precioD": 2100, "precioM": 1400, "margenD": 53.6, "margenM": 30.3}, {"item": "Perejil", "producto": "Perejil", "categoria": "Hojas verdes", "variable": "1 unidad", "costo": 1362.79, "precioD": 2900, "precioM": 1900, "margenD": 53.0, "margenM": 28.3}, {"item": "Menta", "producto": "Menta", "categoria": "Hojas verdes", "variable": "1 unidad", "costo": 3688.37, "precioD": 7700, "precioM": 5000, "margenD": 52.1, "margenM": 26.2}, {"item": "Lechuguin Planta", "producto": "Lechuguin Planta", "categoria": "Hojas verdes", "variable": "1 unidad", "costo": 1362.79, "precioD": 2900, "precioM": 1900, "margenD": 53.0, "margenM": 28.3}, {"item": "Lechuga Repollada - 1 kg", "producto": "Lechuga Repollada", "categoria": "Hojas verdes", "variable": "1 kg", "costo": 2089.53, "precioD": 4400, "precioM": 2800, "margenD": 52.5, "margenM": 25.4}, {"item": "Lechuga Repollada", "producto": "Lechuga Repollada", "categoria": "Hojas verdes", "variable": "1 unidad", "costo": 2089.53, "precioD": 4400, "precioM": 2800, "margenD": 52.5, "margenM": 25.4}, {"item": "Lechuga Repollada - 500 g", "producto": "Lechuga Repollada", "categoria": "Hojas verdes", "variable": "500 g", "costo": 1044.77, "precioD": 2200, "precioM": 1400, "margenD": 52.5, "margenM": 25.4}, {"item": "Lechuga Manteca - 1 kg", "producto": "Lechuga Manteca", "categoria": "Hojas verdes", "variable": "1 kg", "costo": 1944.19, "precioD": 4100, "precioM": 2600, "margenD": 52.6, "margenM": 25.2}, {"item": "Lechuga Manteca", "producto": "Lechuga Manteca", "categoria": "Hojas verdes", "variable": "1 unidad", "costo": 1944.19, "precioD": 4100, "precioM": 2600, "margenD": 52.6, "margenM": 25.2}, {"item": "Lechuga Manteca - 500 g", "producto": "Lechuga Manteca", "categoria": "Hojas verdes", "variable": "500 g", "costo": 972.09, "precioD": 2100, "precioM": 1300, "margenD": 53.7, "margenM": 25.2}, {"item": "Espinaca Verano", "producto": "Espinaca Verano", "categoria": "Hojas verdes", "variable": "1 unidad", "costo": 1556.59, "precioD": 3300, "precioM": 2100, "margenD": 52.8, "margenM": 25.9}, {"item": "Albahaca Plantin", "producto": "Albahaca Plantin", "categoria": "Hojas verdes", "variable": "1 unidad", "costo": 1362.79, "precioD": 2900, "precioM": 1900, "margenD": 53.0, "margenM": 28.3}, {"item": "Acelga", "producto": "Acelga", "categoria": "Hojas verdes", "variable": "1 unidad", "costo": 1362.79, "precioD": 2900, "precioM": 1900, "margenD": 53.0, "margenM": 28.3}, {"item": "Uva Morada - 250 g", "producto": "Uva Morada", "categoria": "Frutas", "variable": "250 g", "costo": 580.26, "precioD": 1200, "precioM": 800, "margenD": 51.6, "margenM": 27.5}, {"item": "Uva Morada - 500 g", "producto": "Uva Morada", "categoria": "Frutas", "variable": "500 g", "costo": 1160.53, "precioD": 2400, "precioM": 1500, "margenD": 51.6, "margenM": 22.6}, {"item": "Uva Blanca - 250 g", "producto": "Uva Blanca", "categoria": "Frutas", "variable": "250 g", "costo": 879.61, "precioD": 1800, "precioM": 1200, "margenD": 51.1, "margenM": 26.7}, {"item": "Uva Blanca - 500 g", "producto": "Uva Blanca", "categoria": "Frutas", "variable": "500 g", "costo": 1759.21, "precioD": 3600, "precioM": 2300, "margenD": 51.1, "margenM": 23.5}, {"item": "Sandia", "producto": "Sandia", "categoria": "Frutas", "variable": "1 unidad", "costo": 6465.79, "precioD": 13000, "precioM": 8300, "margenD": 50.3, "margenM": 22.1}, {"item": "Sandia - 1/2 unidad", "producto": "Sandia", "categoria": "Frutas", "variable": "1/2 unidad", "costo": 12931.58, "precioD": 25900, "precioM": 16600, "margenD": 50.1, "margenM": 22.1}, {"item": "Sandia - 1/4 unidad", "producto": "Sandia", "categoria": "Frutas", "variable": "1/4 unidad", "costo": 25863.16, "precioD": 51800, "precioM": 33200, "margenD": 50.1, "margenM": 22.1}, {"item": "Pomelo Rojo - 1 kg", "producto": "Pomelo Rojo", "categoria": "Frutas", "variable": "1 kg", "costo": 1030.22, "precioD": 2000, "precioM": 1300, "margenD": 48.5, "margenM": 20.8}, {"item": "Pomelo Rojo - 500 g", "producto": "Pomelo Rojo", "categoria": "Frutas", "variable": "500 g", "costo": 515.11, "precioD": 1000, "precioM": 700, "margenD": 48.5, "margenM": 26.4}, {"item": "Pitaya", "producto": "Pitaya", "categoria": "Frutas", "variable": "1 unidad", "costo": 325.44, "precioD": 700, "precioM": 500, "margenD": 53.5, "margenM": 34.9}, {"item": "Pera - 1 kg", "producto": "Pera", "categoria": "Frutas", "variable": "1 kg", "costo": 1923.08, "precioD": 3600, "precioM": 2500, "margenD": 46.6, "margenM": 23.1}, {"item": "Pera - 500 g", "producto": "Pera", "categoria": "Frutas", "variable": "500 g", "costo": 961.54, "precioD": 1800, "precioM": 1300, "margenD": 46.6, "margenM": 26.0}, {"item": "Palta Torres", "producto": "Palta Torres", "categoria": "Frutas", "variable": "1 unidad", "costo": 818.33, "precioD": 1500, "precioM": 1000, "margenD": 45.4, "margenM": 18.2}, {"item": "Palta Hass", "producto": "Palta Hass", "categoria": "Frutas", "variable": "1 unidad", "costo": 696.56, "precioD": 1300, "precioM": 900, "margenD": 46.4, "margenM": 22.6}, {"item": "Naranja Ombligo - 1 kg", "producto": "Naranja Ombligo", "categoria": "Frutas", "variable": "1 kg", "costo": 1717.03, "precioD": 3200, "precioM": 2200, "margenD": 46.3, "margenM": 22.0}, {"item": "Naranja Ombligo - 500 g", "producto": "Naranja Ombligo", "categoria": "Frutas", "variable": "500 g", "costo": 858.52, "precioD": 1600, "precioM": 1100, "margenD": 46.3, "margenM": 22.0}, {"item": "Naranja Jugo - 1 kg", "producto": "Naranja Jugo", "categoria": "Frutas", "variable": "1 kg", "costo": 744.68, "precioD": 1400, "precioM": 1000, "margenD": 46.8, "margenM": 25.5}, {"item": "Naranja Jugo - 500 g", "producto": "Naranja Jugo", "categoria": "Frutas", "variable": "500 g", "costo": 372.34, "precioD": 700, "precioM": 500, "margenD": 46.8, "margenM": 25.5}, {"item": "Melon", "producto": "Melon", "categoria": "Frutas", "variable": "1 unidad", "costo": 3296.7, "precioD": 6200, "precioM": 4200, "margenD": 46.8, "margenM": 21.5}, {"item": "Melon - 1/2 unidad", "producto": "Melon", "categoria": "Frutas", "variable": "1/2 unidad", "costo": 6593.41, "precioD": 12300, "precioM": 8300, "margenD": 46.4, "margenM": 20.6}, {"item": "Manzana Verde - 1 kg", "producto": "Manzana Verde", "categoria": "Frutas", "variable": "1 kg", "costo": 3090.66, "precioD": 5800, "precioM": 3900, "margenD": 46.7, "margenM": 20.8}, {"item": "Manzana Verde - 500 g", "producto": "Manzana Verde", "categoria": "Frutas", "variable": "500 g", "costo": 1545.33, "precioD": 2900, "precioM": 2000, "margenD": 46.7, "margenM": 22.7}, {"item": "Manzana Roja - 1 kg", "producto": "Manzana Roja", "categoria": "Frutas", "variable": "1 kg", "costo": 4120.88, "precioD": 7700, "precioM": 5200, "margenD": 46.5, "margenM": 20.8}, {"item": "Manzana Roja - 500 g", "producto": "Manzana Roja", "categoria": "Frutas", "variable": "500 g", "costo": 2060.44, "precioD": 3900, "precioM": 2600, "margenD": 47.2, "margenM": 20.8}, {"item": "Manzana Pink - 1 kg", "producto": "Manzana Pink", "categoria": "Frutas", "variable": "1 kg", "costo": 1785.71, "precioD": 3400, "precioM": 2300, "margenD": 47.5, "margenM": 22.4}, {"item": "Manzana Pink - 500 g", "producto": "Manzana Pink", "categoria": "Frutas", "variable": "500 g", "costo": 892.86, "precioD": 1700, "precioM": 1200, "margenD": 47.5, "margenM": 25.6}, {"item": "Manzana Granel - 1 kg", "producto": "Manzana Granel", "categoria": "Frutas", "variable": "1 kg", "costo": 2008.79, "precioD": 4200, "precioM": 2700, "margenD": 52.2, "margenM": 25.6}, {"item": "Manzana Granel - 500 g", "producto": "Manzana Granel", "categoria": "Frutas", "variable": "500 g", "costo": 1004.39, "precioD": 2100, "precioM": 1400, "margenD": 52.2, "margenM": 28.3}, {"item": "Mango", "producto": "Mango", "categoria": "Frutas", "variable": "1 unidad", "costo": 1290.35, "precioD": 2600, "precioM": 1700, "margenD": 50.4, "margenM": 24.1}, {"item": "Mandarina Murcot - 1 kg", "producto": "Mandarina Murcot", "categoria": "Frutas", "variable": "1 kg", "costo": 1.1, "precioD": 100, "precioM": 100, "margenD": 98.9, "margenM": 98.9}, {"item": "Mandarina Murcot - 500 g", "producto": "Mandarina Murcot", "categoria": "Frutas", "variable": "500 g", "costo": 0.55, "precioD": 100, "precioM": 100, "margenD": 99.5, "margenM": 99.5}, {"item": "Mandarina Dancy - 1 kg", "producto": "Mandarina Dancy", "categoria": "Frutas", "variable": "1 kg", "costo": 1098.9, "precioD": 2100, "precioM": 1400, "margenD": 47.7, "margenM": 21.5}, {"item": "Mandarina Dancy - 500 g", "producto": "Mandarina Dancy", "categoria": "Frutas", "variable": "500 g", "costo": 549.45, "precioD": 1100, "precioM": 700, "margenD": 50.0, "margenM": 21.5}, {"item": "Mandarina Criolla - 1 kg", "producto": "Mandarina Criolla", "categoria": "Frutas", "variable": "1 kg", "costo": 1236.26, "precioD": 2300, "precioM": 1600, "margenD": 46.2, "margenM": 22.7}, {"item": "Mandarina Criolla - 500 g", "producto": "Mandarina Criolla", "categoria": "Frutas", "variable": "500 g", "costo": 618.13, "precioD": 1200, "precioM": 800, "margenD": 48.5, "margenM": 22.7}, {"item": "Limon - 1 kg", "producto": "Limon", "categoria": "Frutas", "variable": "1 kg", "costo": 598.4, "precioD": 1100, "precioM": 800, "margenD": 45.6, "margenM": 25.2}, {"item": "Limon - 500 g", "producto": "Limon", "categoria": "Frutas", "variable": "500 g", "costo": 299.2, "precioD": 600, "precioM": 400, "margenD": 50.1, "margenM": 25.2}, {"item": "Lima - 125 g", "producto": "Lima", "categoria": "Frutas", "variable": "125 g", "costo": 618.13, "precioD": 1200, "precioM": 800, "margenD": 48.5, "margenM": 22.7}, {"item": "Lima - 250 g", "producto": "Lima", "categoria": "Frutas", "variable": "250 g", "costo": 1236.26, "precioD": 2300, "precioM": 1600, "margenD": 46.2, "margenM": 22.7}, {"item": "Kiwi - 250 g", "producto": "Kiwi", "categoria": "Frutas", "variable": "250 g", "costo": 1645.69, "precioD": 3300, "precioM": 2200, "margenD": 50.1, "margenM": 25.2}, {"item": "Kiwi - 500 g", "producto": "Kiwi", "categoria": "Frutas", "variable": "500 g", "costo": 3291.37, "precioD": 6600, "precioM": 4300, "margenD": 50.1, "margenM": 23.5}, {"item": "Granada", "producto": "Granada", "categoria": "Frutas", "variable": "1 unidad", "costo": 1684.4, "precioD": 3100, "precioM": 2100, "margenD": 45.7, "margenM": 19.8}, {"item": "Frutilla - 1 kg", "producto": "Frutilla", "categoria": "Frutas", "variable": "1 kg", "costo": 9623.68, "precioD": 19300, "precioM": 12400, "margenD": 50.1, "margenM": 22.4}, {"item": "Frutilla - 250 g", "producto": "Frutilla", "categoria": "Frutas", "variable": "250 g", "costo": 2405.92, "precioD": 4900, "precioM": 3100, "margenD": 50.9, "margenM": 22.4}, {"item": "Frutilla - 500 g", "producto": "Frutilla", "categoria": "Frutas", "variable": "500 g", "costo": 4811.84, "precioD": 9700, "precioM": 6200, "margenD": 50.4, "margenM": 22.4}, {"item": "Durazno - 1 kg", "producto": "Durazno", "categoria": "Frutas", "variable": "1 kg", "costo": 2781.58, "precioD": 5600, "precioM": 3600, "margenD": 50.3, "margenM": 22.7}, {"item": "Durazno - 500 g", "producto": "Durazno", "categoria": "Frutas", "variable": "500 g", "costo": 1390.79, "precioD": 2800, "precioM": 1800, "margenD": 50.3, "margenM": 22.7}, {"item": "Durazno Pelon - 1 kg", "producto": "Durazno Pelon", "categoria": "Frutas", "variable": "1 kg", "costo": 2781.58, "precioD": 5600, "precioM": 3600, "margenD": 50.3, "margenM": 22.7}, {"item": "Durazno Pelon - 500 g", "producto": "Durazno Pelon", "categoria": "Frutas", "variable": "500 g", "costo": 1390.79, "precioD": 2800, "precioM": 1800, "margenD": 50.3, "margenM": 22.7}, {"item": "Ciruela - 1 kg", "producto": "Ciruela", "categoria": "Frutas", "variable": "1 kg", "costo": 3220.18, "precioD": 6500, "precioM": 4200, "margenD": 50.5, "margenM": 23.3}, {"item": "Ciruela - 500 g", "producto": "Ciruela", "categoria": "Frutas", "variable": "500 g", "costo": 1610.09, "precioD": 3300, "precioM": 2100, "margenD": 51.2, "margenM": 23.3}, {"item": "Ciruela - 250 g", "producto": "Ciruela", "categoria": "Frutas", "variable": "250 g", "costo": 805.04, "precioD": 1700, "precioM": 1100, "margenD": 52.6, "margenM": 26.8}, {"item": "Cerezas - 125 g", "producto": "Cerezas", "categoria": "Frutas", "variable": "125 g", "costo": 749.74, "precioD": 1500, "precioM": 1000, "margenD": 50.0, "margenM": 25.0}, {"item": "Cerezas - 250 g", "producto": "Cerezas", "categoria": "Frutas", "variable": "250 g", "costo": 1499.49, "precioD": 3000, "precioM": 2000, "margenD": 50.0, "margenM": 25.0}, {"item": "Banana Ecuador - 1 kg", "producto": "Banana Ecuador", "categoria": "Frutas", "variable": "1 kg", "costo": 2079.82, "precioD": 4200, "precioM": 2700, "margenD": 50.5, "margenM": 23.0}, {"item": "Banana Ecuador - 500 g", "producto": "Banana Ecuador", "categoria": "Frutas", "variable": "500 g", "costo": 1039.91, "precioD": 2100, "precioM": 1400, "margenD": 50.5, "margenM": 25.7}, {"item": "Banana Boliviana - 1 kg", "producto": "Banana Boliviana", "categoria": "Frutas", "variable": "1 kg", "costo": 1404.15, "precioD": 2700, "precioM": 1800, "margenD": 48.0, "margenM": 22.0}, {"item": "Banana Boliviana - 500 g", "producto": "Banana Boliviana", "categoria": "Frutas", "variable": "500 g", "costo": 702.08, "precioD": 1400, "precioM": 900, "margenD": 49.9, "margenM": 22.0}, {"item": "Arandanos - 1 bandeja", "producto": "Arandanos", "categoria": "Frutas", "variable": "1 bandeja", "costo": 3223.08, "precioD": 6000, "precioM": 4100, "margenD": 46.3, "margenM": 21.4}, {"item": "Anana", "producto": "Anana", "categoria": "Frutas", "variable": "1 unidad", "costo": 5939.47, "precioD": 11900, "precioM": 7700, "margenD": 50.1, "margenM": 22.9}, {"item": "Anana - 1/2 unidad", "producto": "Anana", "categoria": "Frutas", "variable": "1/2 unidad", "costo": 11878.95, "precioD": 23800, "precioM": 15300, "margenD": 50.1, "margenM": 22.4}, {"item": "Carbon", "producto": "Carbon", "categoria": "Almacen", "variable": "1 unidad", "costo": 1919.19, "precioD": 3000, "precioM": 2400, "margenD": 36.0, "margenM": 20.0}, {"item": "COMBO FRUTERO", "producto": "COMBO FRUTERO", "categoria": "Combos", "variable": "1 unidad", "costo": 150.0, "precioD": 300, "precioM": 200, "margenD": 50.0, "margenM": 25.0}, {"item": "Aceite de Oliva 1° - 1 bulto", "producto": "Aceite de Oliva 1°", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Aceite de Oliva 2° - 1 bulto", "producto": "Aceite de Oliva 2°", "categoria": "Almacen", "variable": "1 bulto", "costo": 3300.0, "precioD": 5000, "precioM": 4100, "margenD": 34.0, "margenM": 19.5}, {"item": "Acelga - 1 bulto", "producto": "Acelga", "categoria": "Hojas verdes", "variable": "1 bulto", "costo": 6000.0, "precioD": 12500, "precioM": 8000, "margenD": 52.0, "margenM": 25.0}, {"item": "Agua - 1 bulto", "producto": "Agua", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Aji Molido - 1 bulto", "producto": "Aji Molido", "categoria": "Almacen", "variable": "1 bulto", "costo": 600.0, "precioD": 1000, "precioM": 800, "margenD": 40.0, "margenM": 25.0}, {"item": "Ajo - 1 bulto", "producto": "Ajo", "categoria": "Verduras", "variable": "1 bulto", "costo": 28000.0, "precioD": 51000, "precioM": 34200, "margenD": 45.1, "margenM": 18.1}, {"item": "Albahaca Plantin - 1 bulto", "producto": "Albahaca Plantin", "categoria": "Hojas verdes", "variable": "1 bulto", "costo": 3000.0, "precioD": 6300, "precioM": 4000, "margenD": 52.4, "margenM": 25.0}, {"item": "Alcaucil - 1 bulto", "producto": "Alcaucil", "categoria": "Verduras", "variable": "1 bulto", "costo": 5000.0, "precioD": 10000, "precioM": 6500, "margenD": 50.0, "margenM": 23.1}, {"item": "Almendras - 1 bulto", "producto": "Almendras", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Almohaditas Chocolate - 1 bulto", "producto": "Almohaditas Chocolate", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Almohaditas Frutilla - 1 bulto", "producto": "Almohaditas Frutilla", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Almohaditas Limon - 1 bulto", "producto": "Almohaditas Limon", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Anana - 1 bulto", "producto": "Anana", "categoria": "Frutas", "variable": "1 bulto", "costo": 5500.0, "precioD": 11000, "precioM": 7100, "margenD": 50.0, "margenM": 22.5}, {"item": "Anco / Calabacin - 1 bulto", "producto": "Anco / Calabacin", "categoria": "Verduras", "variable": "1 bulto", "costo": 9000.0, "precioD": 16400, "precioM": 11000, "margenD": 45.1, "margenM": 18.2}, {"item": "Apio - 1 bulto", "producto": "Apio", "categoria": "Hojas verdes", "variable": "1 bulto", "costo": 3000.0, "precioD": 6300, "precioM": 4000, "margenD": 52.4, "margenM": 25.0}, {"item": "Arandanos - 1 bulto", "producto": "Arandanos", "categoria": "Frutas", "variable": "1 bulto", "costo": 2933.0, "precioD": 5500, "precioM": 3700, "margenD": 46.7, "margenM": 20.7}, {"item": "Arandanos Congelados - 1 bulto", "producto": "Arandanos Congelados", "categoria": "Congelados", "variable": "1 bulto", "costo": 1580.0, "precioD": 3200, "precioM": 2100, "margenD": 50.6, "margenM": 24.8}, {"item": "Aritos Frutales - 1 bulto", "producto": "Aritos Frutales", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Avena Instantanea - 1 bulto", "producto": "Avena Instantanea", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Azucar x1KG - 1 bulto", "producto": "Azucar x1KG", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Banana Boliviana - 1 bulto", "producto": "Banana Boliviana", "categoria": "Frutas", "variable": "1 bulto", "costo": 23000.0, "precioD": 42600, "precioM": 28800, "margenD": 46.0, "margenM": 20.1}, {"item": "Banana Deshidratada (chips) - 1 bulto", "producto": "Banana Deshidratada (chips)", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Banana Ecuador - 1 bulto", "producto": "Banana Ecuador", "categoria": "Frutas", "variable": "1 bulto", "costo": 33000.0, "precioD": 66000, "precioM": 42400, "margenD": 50.0, "margenM": 22.2}, {"item": "Batata - 1 bulto", "producto": "Batata", "categoria": "Verduras", "variable": "1 bulto", "costo": 18000.0, "precioD": 32800, "precioM": 22000, "margenD": 45.1, "margenM": 18.2}, {"item": "Berenjena - 1 bulto", "producto": "Berenjena", "categoria": "Verduras", "variable": "1 bulto", "costo": 14000.0, "precioD": 25500, "precioM": 17100, "margenD": 45.1, "margenM": 18.1}, {"item": "Bicarbonato - 1 bulto", "producto": "Bicarbonato", "categoria": "Almacen", "variable": "1 bulto", "costo": 700.0, "precioD": 1100, "precioM": 900, "margenD": 36.4, "margenM": 22.2}, {"item": "Bolitas de Chocolate - 1 bulto", "producto": "Bolitas de Chocolate", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Boniato - 1 bulto", "producto": "Boniato", "categoria": "Verduras", "variable": "1 bulto", "costo": 30000.0, "precioD": 62500, "precioM": 40000, "margenD": 52.0, "margenM": 25.0}, {"item": "Brocoli - 1 bulto", "producto": "Brocoli", "categoria": "Verduras", "variable": "1 bulto", "costo": 10000.0, "precioD": 18200, "precioM": 12200, "margenD": 45.1, "margenM": 18.0}, {"item": "Cafe c/leche - 1 bulto", "producto": "Cafe c/leche", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Cafe Dolca - 1 bulto", "producto": "Cafe Dolca", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Calabaza Rayada - 1 bulto", "producto": "Calabaza Rayada", "categoria": "Verduras", "variable": "1 bulto", "costo": 5000.0, "precioD": 9100, "precioM": 6100, "margenD": 45.1, "margenM": 18.0}, {"item": "Carbon - 1 bulto", "producto": "Carbon", "categoria": "Almacen", "variable": "1 bulto", "costo": 1900.0, "precioD": 2900, "precioM": 2400, "margenD": 34.5, "margenM": 20.8}, {"item": "Cebolla - 1 bulto", "producto": "Cebolla", "categoria": "Verduras", "variable": "1 bulto", "costo": 12000.0, "precioD": 21900, "precioM": 14700, "margenD": 45.2, "margenM": 18.4}, {"item": "Cebolla Morada - 1 bulto", "producto": "Cebolla Morada", "categoria": "Verduras", "variable": "1 bulto", "costo": 21000.0, "precioD": 42000, "precioM": 27000, "margenD": 50.0, "margenM": 22.2}, {"item": "Cerezas - 1 bulto", "producto": "Cerezas", "categoria": "Frutas", "variable": "1 bulto", "costo": 50000.0, "precioD": 100000, "precioM": 64200, "margenD": 50.0, "margenM": 22.1}, {"item": "Champignon - 1 bulto", "producto": "Champignon", "categoria": "Verduras", "variable": "1 bulto", "costo": 17000.0, "precioD": 31000, "precioM": 20800, "margenD": 45.2, "margenM": 18.3}, {"item": "Chaucha Fina - 1 bulto", "producto": "Chaucha Fina", "categoria": "Verduras", "variable": "1 bulto", "costo": 20000.0, "precioD": 37100, "precioM": 25000, "margenD": 46.1, "margenM": 20.0}, {"item": "Cherry - 1 bulto", "producto": "Cherry", "categoria": "Verduras", "variable": "1 bulto", "costo": 14000.0, "precioD": 28000, "precioM": 18000, "margenD": 50.0, "margenM": 22.2}, {"item": "Chimichurri - 1 bulto", "producto": "Chimichurri", "categoria": "Almacen", "variable": "1 bulto", "costo": 700.0, "precioD": 1100, "precioM": 900, "margenD": 36.4, "margenM": 22.2}, {"item": "Chipá congelado - 1 bulto", "producto": "Chipá congelado", "categoria": "Congelados", "variable": "1 bulto", "costo": 5250.0, "precioD": 10500, "precioM": 6800, "margenD": 50.0, "margenM": 22.8}, {"item": "Choclo - 1 bulto", "producto": "Choclo", "categoria": "Verduras", "variable": "1 bulto", "costo": 20000.0, "precioD": 36400, "precioM": 24400, "margenD": 45.1, "margenM": 18.0}, {"item": "Ciruela - 1 bulto", "producto": "Ciruela", "categoria": "Frutas", "variable": "1 bulto", "costo": 35000.0, "precioD": 70000, "precioM": 44900, "margenD": 50.0, "margenM": 22.0}, {"item": "Coliflor - 1 bulto", "producto": "Coliflor", "categoria": "Verduras", "variable": "1 bulto", "costo": 1000.0, "precioD": 1900, "precioM": 1300, "margenD": 47.4, "margenM": 23.1}, {"item": "COMBO CLASICO - 1 bulto", "producto": "COMBO CLASICO", "categoria": "Combos", "variable": "1 bulto", "costo": 0.0, "precioD": 0, "precioM": 0, "margenD": 0.0, "margenM": 0.0}, {"item": "COMBO FULL - 1 bulto", "producto": "COMBO FULL", "categoria": "Combos", "variable": "1 bulto", "costo": 0.0, "precioD": 0, "precioM": 0, "margenD": 0.0, "margenM": 0.0}, {"item": "Condimento para Arroz - 1 bulto", "producto": "Condimento para Arroz", "categoria": "Almacen", "variable": "1 bulto", "costo": 600.0, "precioD": 1000, "precioM": 800, "margenD": 40.0, "margenM": 25.0}, {"item": "Condimento para Pizza - 1 bulto", "producto": "Condimento para Pizza", "categoria": "Almacen", "variable": "1 bulto", "costo": 600.0, "precioD": 1000, "precioM": 800, "margenD": 40.0, "margenM": 25.0}, {"item": "Copos Azucarados - 1 bulto", "producto": "Copos Azucarados", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Curcuma - 1 bulto", "producto": "Curcuma", "categoria": "Verduras", "variable": "1 bulto", "costo": 10000.0, "precioD": 18200, "precioM": 12200, "margenD": 45.1, "margenM": 18.0}, {"item": "Dulce de Ciruela (Casero) - 1 bulto", "producto": "Dulce de Ciruela (Casero)", "categoria": "Dietetica", "variable": "1 bulto", "costo": 3366.0, "precioD": 5500, "precioM": 4400, "margenD": 38.8, "margenM": 23.5}, {"item": "Dulce de Leche - 1 bulto", "producto": "Dulce de Leche", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Durazno - 1 bulto", "producto": "Durazno", "categoria": "Frutas", "variable": "1 bulto", "costo": 40000.0, "precioD": 80000, "precioM": 51300, "margenD": 50.0, "margenM": 22.0}, {"item": "Durazno Pelon - 1 bulto", "producto": "Durazno Pelon", "categoria": "Frutas", "variable": "1 bulto", "costo": 40000.0, "precioD": 80000, "precioM": 51300, "margenD": 50.0, "margenM": 22.0}, {"item": "Edulcorante - 1 bulto", "producto": "Edulcorante", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "COMBO FRUTERO - 1 bulto", "producto": "COMBO FRUTERO", "categoria": "Combos", "variable": "1 bulto", "costo": 0.0, "precioD": 0, "precioM": 0, "margenD": 0.0, "margenM": 0.0}, {"item": "Esparragos - 1 bulto", "producto": "Esparragos", "categoria": "Verduras", "variable": "1 bulto", "costo": 2000.0, "precioD": 4000, "precioM": 2600, "margenD": 50.0, "margenM": 23.1}, {"item": "Espinaca Invierno - 1 bulto", "producto": "Espinaca Invierno", "categoria": "Hojas verdes", "variable": "1 bulto", "costo": 18000.0, "precioD": 37500, "precioM": 24000, "margenD": 52.0, "margenM": 25.0}, {"item": "Espinaca Verano - 1 bulto", "producto": "Espinaca Verano", "categoria": "Hojas verdes", "variable": "1 bulto", "costo": 14000.0, "precioD": 29200, "precioM": 18700, "margenD": 52.1, "margenM": 25.1}, {"item": "Frutilla - 1 bulto", "producto": "Frutilla", "categoria": "Frutas", "variable": "1 bulto", "costo": 45000.0, "precioD": 90000, "precioM": 57700, "margenD": 50.0, "margenM": 22.0}, {"item": "Frutos Rojos Congelados - 1 bulto", "producto": "Frutos Rojos Congelados", "categoria": "Congelados", "variable": "1 bulto", "costo": 1580.0, "precioD": 3200, "precioM": 2100, "margenD": 50.6, "margenM": 24.8}, {"item": "Galleta de Arroz Dulce - 1 bulto", "producto": "Galleta de Arroz Dulce", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Galleta de Arroz Integral - 1 bulto", "producto": "Galleta de Arroz Integral", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Galleta de Arroz Salada - 1 bulto", "producto": "Galleta de Arroz Salada", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Garbanzos - 1 bulto", "producto": "Garbanzos", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Granada - 1 bulto", "producto": "Granada", "categoria": "Frutas", "variable": "1 bulto", "costo": 19000.0, "precioD": 34600, "precioM": 23200, "margenD": 45.1, "margenM": 18.1}, {"item": "Granola c/miel - 1 bulto", "producto": "Granola c/miel", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Harina de Avena - 1 bulto", "producto": "Harina de Avena", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Hileret x 50 - 1 bulto", "producto": "Hileret x 50", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Jengibre - 1 bulto", "producto": "Jengibre", "categoria": "Verduras", "variable": "1 bulto", "costo": 8000.0, "precioD": 14600, "precioM": 9800, "margenD": 45.2, "margenM": 18.4}, {"item": "Kiwi - 1 bulto", "producto": "Kiwi", "categoria": "Frutas", "variable": "1 bulto", "costo": 55000.0, "precioD": 110000, "precioM": 70600, "margenD": 50.0, "margenM": 22.1}, {"item": "Lata Coca Cola - 1 bulto", "producto": "Lata Coca Cola", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Lata Coca Cola - Zero - 1 bulto", "producto": "Lata Coca Cola - Zero", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Lata Schweps - 1 bulto", "producto": "Lata Schweps", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Lata Tomate - 1 bulto", "producto": "Lata Tomate", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Laurel - 1 bulto", "producto": "Laurel", "categoria": "Almacen", "variable": "1 bulto", "costo": 1200.0, "precioD": 1900, "precioM": 1500, "margenD": 36.8, "margenM": 20.0}, {"item": "Leche LV comun - 1 bulto", "producto": "Leche LV comun", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Leche LV descremada - 1 bulto", "producto": "Leche LV descremada", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Lechuga Manteca - 1 bulto", "producto": "Lechuga Manteca", "categoria": "Hojas verdes", "variable": "1 bulto", "costo": 12000.0, "precioD": 25000, "precioM": 16000, "margenD": 52.0, "margenM": 25.0}, {"item": "Lechuga Repollada - 1 bulto", "producto": "Lechuga Repollada", "categoria": "Hojas verdes", "variable": "1 bulto", "costo": 13000.0, "precioD": 27100, "precioM": 17400, "margenD": 52.0, "margenM": 25.3}, {"item": "Lechuguin Planta - 1 bulto", "producto": "Lechuguin Planta", "categoria": "Hojas verdes", "variable": "1 bulto", "costo": 12000.0, "precioD": 25000, "precioM": 16000, "margenD": 52.0, "margenM": 25.0}, {"item": "Lentejas - 1 bulto", "producto": "Lentejas", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Levadura Seca - 1 bulto", "producto": "Levadura Seca", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Lima - 1 bulto", "producto": "Lima", "categoria": "Frutas", "variable": "1 bulto", "costo": 4500.0, "precioD": 8400, "precioM": 5700, "margenD": 46.4, "margenM": 21.1}, {"item": "Limon - 1 bulto", "producto": "Limon", "categoria": "Frutas", "variable": "1 bulto", "costo": 9000.0, "precioD": 16400, "precioM": 11000, "margenD": 45.1, "margenM": 18.2}, {"item": "Maiz pisingayo - 1 bulto", "producto": "Maiz pisingayo", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Mandarina Criolla - 1 bulto", "producto": "Mandarina Criolla", "categoria": "Frutas", "variable": "1 bulto", "costo": 18000.0, "precioD": 33400, "precioM": 22500, "margenD": 46.1, "margenM": 20.0}, {"item": "Mandarina Dancy - 1 bulto", "producto": "Mandarina Dancy", "categoria": "Frutas", "variable": "1 bulto", "costo": 16000.0, "precioD": 29700, "precioM": 20000, "margenD": 46.1, "margenM": 20.0}, {"item": "Mandarina Murcot - 1 bulto", "producto": "Mandarina Murcot", "categoria": "Frutas", "variable": "1 bulto", "costo": 1.0, "precioD": 100, "precioM": 100, "margenD": 99.0, "margenM": 99.0}, {"item": "Mandarina Okitzu - 1 bulto", "producto": "Mandarina Okitzu", "categoria": "Frutas", "variable": "1 bulto", "costo": 13000.0, "precioD": 24100, "precioM": 16300, "margenD": 46.1, "margenM": 20.2}, {"item": "Mango - 1 bulto", "producto": "Mango", "categoria": "Frutas", "variable": "1 bulto", "costo": 13000.0, "precioD": 26000, "precioM": 16700, "margenD": 50.0, "margenM": 22.2}, {"item": "Mani con Cascara - 1 bulto", "producto": "Mani con Cascara", "categoria": "Almacen", "variable": "1 bulto", "costo": 18000.0, "precioD": 32800, "precioM": 22000, "margenD": 45.1, "margenM": 18.2}, {"item": "Manzana Granel - 1 bulto", "producto": "Manzana Granel", "categoria": "Frutas", "variable": "1 bulto", "costo": 28000.0, "precioD": 58400, "precioM": 37400, "margenD": 52.1, "margenM": 25.1}, {"item": "Manzana Pink - 1 bulto", "producto": "Manzana Pink", "categoria": "Frutas", "variable": "1 bulto", "costo": 26000.0, "precioD": 48200, "precioM": 32500, "margenD": 46.1, "margenM": 20.0}, {"item": "Manzana Roja - 1 bulto", "producto": "Manzana Roja", "categoria": "Frutas", "variable": "1 bulto", "costo": 60000.0, "precioD": 111200, "precioM": 75000, "margenD": 46.0, "margenM": 20.0}, {"item": "Manzana Verde - 1 bulto", "producto": "Manzana Verde", "categoria": "Frutas", "variable": "1 bulto", "costo": 45000.0, "precioD": 83400, "precioM": 56300, "margenD": 46.0, "margenM": 20.1}, {"item": "Media Docena de Huevos - 1 bulto", "producto": "Media Docena de Huevos", "categoria": "Huevos", "variable": "1 bulto", "costo": 1.0, "precioD": 100, "precioM": 100, "margenD": 99.0, "margenM": 99.0}, {"item": "Maple Huevo Blanco Chico - 1 bulto", "producto": "Maple Huevo Blanco Chico", "categoria": "Huevos", "variable": "1 bulto", "costo": 58000.0, "precioD": 75400, "precioM": 68300, "margenD": 23.1, "margenM": 15.1}, {"item": "Maple Huevo Blanco 2 Kg - 1 bulto", "producto": "Maple Huevo Blanco 2 Kg", "categoria": "Huevos", "variable": "1 bulto", "costo": 3825.0, "precioD": 5000, "precioM": 4500, "margenD": 23.5, "margenM": 15.0}, {"item": "Maple Huevo Color 2Kg - 1 bulto", "producto": "Maple Huevo Color 2Kg", "categoria": "Huevos", "variable": "1 bulto", "costo": 4930.0, "precioD": 6500, "precioM": 5800, "margenD": 24.2, "margenM": 15.0}, {"item": "Melon - 1 bulto", "producto": "Melon", "categoria": "Frutas", "variable": "1 bulto", "costo": 18000.0, "precioD": 33400, "precioM": 22500, "margenD": 46.1, "margenM": 20.0}, {"item": "Menta - 1 bulto", "producto": "Menta", "categoria": "Hojas verdes", "variable": "1 bulto", "costo": 3000.0, "precioD": 6300, "precioM": 4000, "margenD": 52.4, "margenM": 25.0}, {"item": "Miel x 250Gr - 1 bulto", "producto": "Miel x 250Gr", "categoria": "Dietetica", "variable": "1 bulto", "costo": 2652.0, "precioD": 4300, "precioM": 3400, "margenD": 38.3, "margenM": 22.0}, {"item": "Miel x 500Gr - 1 bulto", "producto": "Miel x 500Gr", "categoria": "Dietetica", "variable": "1 bulto", "costo": 3366.0, "precioD": 5500, "precioM": 4400, "margenD": 38.8, "margenM": 23.5}, {"item": "Miel Crema x 250Gr - 1 bulto", "producto": "Miel Crema x 250Gr", "categoria": "Dietetica", "variable": "1 bulto", "costo": 2652.0, "precioD": 4300, "precioM": 3400, "margenD": 38.3, "margenM": 22.0}, {"item": "Miel Crema x 500Gr - 1 bulto", "producto": "Miel Crema x 500Gr", "categoria": "Dietetica", "variable": "1 bulto", "costo": 4080.0, "precioD": 6600, "precioM": 5300, "margenD": 38.2, "margenM": 23.0}, {"item": "Mix Energizante - 1 bulto", "producto": "Mix Energizante", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Mix Repollos Rallados - 1 bulto", "producto": "Mix Repollos Rallados", "categoria": "Bandejas", "variable": "1 bulto", "costo": 1580.0, "precioD": 3200, "precioM": 2100, "margenD": 50.6, "margenM": 24.8}, {"item": "Naranja Jugo - 1 bulto", "producto": "Naranja Jugo", "categoria": "Frutas", "variable": "1 bulto", "costo": 14000.0, "precioD": 25500, "precioM": 17100, "margenD": 45.1, "margenM": 18.1}, {"item": "Naranja Ombligo - 1 bulto", "producto": "Naranja Ombligo", "categoria": "Frutas", "variable": "1 bulto", "costo": 25000.0, "precioD": 46300, "precioM": 31300, "margenD": 46.0, "margenM": 20.1}, {"item": "Nesquick x 500g - 1 bulto", "producto": "Nesquick x 500g", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Nueces - 1 bulto", "producto": "Nueces", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Nuez Moscada - 1 bulto", "producto": "Nuez Moscada", "categoria": "Almacen", "variable": "1 bulto", "costo": 1200.0, "precioD": 1900, "precioM": 1500, "margenD": 36.8, "margenM": 20.0}, {"item": "Oregano - 1 bulto", "producto": "Oregano", "categoria": "Almacen", "variable": "1 bulto", "costo": 850.0, "precioD": 1300, "precioM": 1100, "margenD": 34.6, "margenM": 22.7}, {"item": "Palta Hass - 1 bulto", "producto": "Palta Hass", "categoria": "Frutas", "variable": "1 bulto", "costo": 55000.0, "precioD": 100000, "precioM": 67100, "margenD": 45.0, "margenM": 18.0}, {"item": "Palta Torres - 1 bulto", "producto": "Palta Torres", "categoria": "Frutas", "variable": "1 bulto", "costo": 20000.0, "precioD": 36400, "precioM": 24400, "margenD": 45.1, "margenM": 18.0}, {"item": "Papa Cepillada - 1 bulto", "producto": "Papa Cepillada", "categoria": "Verduras", "variable": "1 bulto", "costo": 11000.0, "precioD": 20000, "precioM": 13500, "margenD": 45.0, "margenM": 18.5}, {"item": "Papá Lavada - 1 bulto", "producto": "Papá Lavada", "categoria": "Verduras", "variable": "1 bulto", "costo": 4800.0, "precioD": 8800, "precioM": 5900, "margenD": 45.5, "margenM": 18.6}, {"item": "Pasta de mani - 1 bulto", "producto": "Pasta de mani", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Pepino - 1 bulto", "producto": "Pepino", "categoria": "Frutas", "variable": "1 bulto", "costo": 9000.0, "precioD": 16700, "precioM": 11300, "margenD": 46.1, "margenM": 20.4}, {"item": "Pera - 1 bulto", "producto": "Pera", "categoria": "Frutas", "variable": "1 bulto", "costo": 28000.0, "precioD": 51900, "precioM": 35000, "margenD": 46.1, "margenM": 20.0}, {"item": "Perejil - 1 bulto", "producto": "Perejil", "categoria": "Hojas verdes", "variable": "1 bulto", "costo": 3000.0, "precioD": 6300, "precioM": 4000, "margenD": 52.4, "margenM": 25.0}, {"item": "Pimenton Dulce - 1 bulto", "producto": "Pimenton Dulce", "categoria": "Almacen", "variable": "1 bulto", "costo": 600.0, "precioD": 1000, "precioM": 800, "margenD": 40.0, "margenM": 25.0}, {"item": "Pimienta Blanca - 1 bulto", "producto": "Pimienta Blanca", "categoria": "Almacen", "variable": "1 bulto", "costo": 1400.0, "precioD": 2200, "precioM": 1800, "margenD": 36.4, "margenM": 22.2}, {"item": "Pimiento Amarillo - 1 bulto", "producto": "Pimiento Amarillo", "categoria": "Verduras", "variable": "1 bulto", "costo": 20000.0, "precioD": 36400, "precioM": 24400, "margenD": 45.1, "margenM": 18.0}, {"item": "Pimiento Rojo - 1 bulto", "producto": "Pimiento Rojo", "categoria": "Verduras", "variable": "1 bulto", "costo": 20000.0, "precioD": 36400, "precioM": 24400, "margenD": 45.1, "margenM": 18.0}, {"item": "Pimiento Rojo Congelado - 1 bulto", "producto": "Pimiento Rojo Congelado", "categoria": "Congelados", "variable": "1 bulto", "costo": 1580.0, "precioD": 3200, "precioM": 2100, "margenD": 50.6, "margenM": 24.8}, {"item": "Frutilla Congelada - 1 bulto", "producto": "Frutilla Congelada", "categoria": "Congelados", "variable": "1 bulto", "costo": 1580.0, "precioD": 3200, "precioM": 2100, "margenD": 50.6, "margenM": 24.8}, {"item": "Pimiento Verde - 1 bulto", "producto": "Pimiento Verde", "categoria": "Verduras", "variable": "1 bulto", "costo": 13000.0, "precioD": 23700, "precioM": 15900, "margenD": 45.1, "margenM": 18.2}, {"item": "Pimiento Verde Congelado - 1 bulto", "producto": "Pimiento Verde Congelado", "categoria": "Congelados", "variable": "1 bulto", "costo": 1580.0, "precioD": 3200, "precioM": 2100, "margenD": 50.6, "margenM": 24.8}, {"item": "Pimientos Mix Congelado - 1 bulto", "producto": "Pimientos Mix Congelado", "categoria": "Congelados", "variable": "1 bulto", "costo": 1580.0, "precioD": 3200, "precioM": 2100, "margenD": 50.6, "margenM": 24.8}, {"item": "Pitaya - 1 bulto", "producto": "Pitaya", "categoria": "Frutas", "variable": "1 bulto", "costo": 2000.0, "precioD": 4000, "precioM": 2600, "margenD": 50.0, "margenM": 23.1}, {"item": "Polvo para Hornear - 1 bulto", "producto": "Polvo para Hornear", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Pomelo Rojo - 1 bulto", "producto": "Pomelo Rojo", "categoria": "Frutas", "variable": "1 bulto", "costo": 15000.0, "precioD": 27800, "precioM": 18800, "margenD": 46.0, "margenM": 20.2}, {"item": "Porotos Blancos - 1 bulto", "producto": "Porotos Blancos", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Porotos Negros - 1 bulto", "producto": "Porotos Negros", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Provenzal - 1 bulto", "producto": "Provenzal", "categoria": "Almacen", "variable": "1 bulto", "costo": 850.0, "precioD": 1300, "precioM": 1100, "margenD": 34.6, "margenM": 22.7}, {"item": "Quinoa Pop - 1 bulto", "producto": "Quinoa Pop", "categoria": "Dietetica", "variable": "1 bulto", "costo": 1000.0, "precioD": 1700, "precioM": 1300, "margenD": 41.2, "margenM": 23.1}, {"item": "Rabanito - 1 bulto", "producto": "Rabanito", "categoria": "Verduras", "variable": "1 bulto", "costo": 1500.0, "precioD": 3200, "precioM": 2000, "margenD": 53.1, "margenM": 25.0}, {"item": "Remolacha - 1 bulto", "producto": "Remolacha", "categoria": "Verduras", "variable": "1 bulto", "costo": 3333.33, "precioD": 7000, "precioM": 4500, "margenD": 52.4, "margenM": 25.9}, {"item": "Repollito Brusela - 1 bulto", "producto": "Repollito Brusela", "categoria": "Verduras", "variable": "1 bulto", "costo": 3500.0, "precioD": 7000, "precioM": 4500, "margenD": 50.0, "margenM": 22.2}, {"item": "Repollo Blanco - 1 bulto", "producto": "Repollo Blanco", "categoria": "Verduras", "variable": "1 bulto", "costo": 1666.67, "precioD": 2600, "precioM": 2100, "margenD": 35.9, "margenM": 20.6}, {"item": "Repollo Blanco Rallado - 1 bulto", "producto": "Repollo Blanco Rallado", "categoria": "Bandejas", "variable": "1 bulto", "costo": 1580.0, "precioD": 3200, "precioM": 2100, "margenD": 50.6, "margenM": 24.8}, {"item": "Repollo Morado - 1 bulto", "producto": "Repollo Morado", "categoria": "Verduras", "variable": "1 bulto", "costo": 2000.0, "precioD": 3100, "precioM": 2500, "margenD": 35.5, "margenM": 20.0}, {"item": "Repollo Morado Rallado - 1 bulto", "producto": "Repollo Morado Rallado", "categoria": "Bandejas", "variable": "1 bulto", "costo": 1580.0, "precioD": 3200, "precioM": 2100, "margenD": 50.6, "margenM": 24.8}, {"item": "Rucula - 1 bulto", "producto": "Rucula", "categoria": "Hojas verdes", "variable": "1 bulto", "costo": 8000.0, "precioD": 16700, "precioM": 10700, "margenD": 52.1, "margenM": 25.2}, {"item": "Sandia - 1 bulto", "producto": "Sandia", "categoria": "Frutas", "variable": "1 bulto", "costo": 6000.0, "precioD": 12000, "precioM": 7700, "margenD": 50.0, "margenM": 22.1}, {"item": "Tomate Perita - 1 bulto", "producto": "Tomate Perita", "categoria": "Verduras", "variable": "1 bulto", "costo": 42000.0, "precioD": 77800, "precioM": 52500, "margenD": 46.0, "margenM": 20.0}, {"item": "Tomate Redondo - 1 bulto", "producto": "Tomate Redondo", "categoria": "Verduras", "variable": "1 bulto", "costo": 38000.0, "precioD": 70400, "precioM": 47500, "margenD": 46.0, "margenM": 20.0}, {"item": "Tomate triturado arcor x500gr - 1 bulto", "producto": "Tomate triturado arcor x500gr", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Tomate Triturado x 1LT - 1 bulto", "producto": "Tomate Triturado x 1LT", "categoria": "Almacen", "variable": "1 bulto", "costo": 1000.0, "precioD": 1600, "precioM": 1300, "margenD": 37.5, "margenM": 23.1}, {"item": "Uva Blanca - 1 bulto", "producto": "Uva Blanca", "categoria": "Frutas", "variable": "1 bulto", "costo": 32000.0, "precioD": 64000, "precioM": 41100, "margenD": 50.0, "margenM": 22.1}, {"item": "Uva Morada - 1 bulto", "producto": "Uva Morada", "categoria": "Frutas", "variable": "1 bulto", "costo": 33000.0, "precioD": 66000, "precioM": 42400, "margenD": 50.0, "margenM": 22.2}, {"item": "Verdeo Planta - 1 bulto", "producto": "Verdeo Planta", "categoria": "Hojas verdes", "variable": "1 bulto", "costo": 3500.0, "precioD": 7300, "precioM": 4700, "margenD": 52.1, "margenM": 25.5}, {"item": "Verdura para Sopa - 1 bulto", "producto": "Verdura para Sopa", "categoria": "Bandejas", "variable": "1 bulto", "costo": 1580.0, "precioD": 3200, "precioM": 2100, "margenD": 50.6, "margenM": 24.8}, {"item": "Zanahoria - 1 bulto", "producto": "Zanahoria", "categoria": "Verduras", "variable": "1 bulto", "costo": 9000.0, "precioD": 16400, "precioM": 11000, "margenD": 45.1, "margenM": 18.2}, {"item": "Zanahoria Rallada - 1 bulto", "producto": "Zanahoria Rallada", "categoria": "Bandejas", "variable": "1 bulto", "costo": 1580.0, "precioD": 3200, "precioM": 2100, "margenD": 50.6, "margenM": 24.8}, {"item": "Zapallito Verde - 1 bulto", "producto": "Zapallito Verde", "categoria": "Verduras", "variable": "1 bulto", "costo": 25000.0, "precioD": 45500, "precioM": 30500, "margenD": 45.1, "margenM": 18.0}, {"item": "Zapallo Criollo - 1 bulto", "producto": "Zapallo Criollo", "categoria": "Verduras", "variable": "1 bulto", "costo": 4000.0, "precioD": 7300, "precioM": 4900, "margenD": 45.2, "margenM": 18.4}, {"item": "Zapallo Cuza - 1 bulto", "producto": "Zapallo Cuza", "categoria": "Verduras", "variable": "1 bulto", "costo": 28000.0, "precioD": 51000, "precioM": 34200, "margenD": 45.1, "margenM": 18.1}, {"item": "Zapallo Negro - 1 bulto", "producto": "Zapallo Negro", "categoria": "Verduras", "variable": "1 bulto", "costo": 12000.0, "precioD": 21900, "precioM": 14700, "margenD": 45.2, "margenM": 18.4}], "combos": {"COMBO CLASICO": [{"producto": "Tomate Perita", "cantidad": 0.5, "lista": "Delivery"}, {"producto": "Lechuga Manteca", "cantidad": 0.3, "lista": "Delivery"}, {"producto": "Zanahoria", "cantidad": 0.5, "lista": "Delivery"}, {"producto": "Pimiento Rojo", "cantidad": 0.3, "lista": "Delivery"}, {"producto": "Pimiento Verde", "cantidad": 0.3, "lista": "Delivery"}, {"producto": "Papa Cepillada", "cantidad": 1.0, "lista": "Delivery"}, {"producto": "Cebolla", "cantidad": 1.0, "lista": "Delivery"}, {"producto": "Anco / Calabacin", "cantidad": 1.2, "lista": "Delivery"}, {"producto": "Banana Boliviana", "cantidad": 0.5, "lista": "Delivery"}, {"producto": "Naranja Jugo", "cantidad": 1.0, "lista": "Delivery"}, {"producto": "Limon", "cantidad": 0.5, "lista": "Delivery"}], "COMBO FRUTERO": [{"producto": "Banana Boliviana", "cantidad": 1.0, "lista": "Delivery"}, {"producto": "Kiwi", "cantidad": 0.25, "lista": "Delivery"}, {"producto": "Limon", "cantidad": 0.5, "lista": "Delivery"}, {"producto": "Manzana Roja", "cantidad": 0.5, "lista": "Delivery"}, {"producto": "Manzana Verde", "cantidad": 0.5, "lista": "Delivery"}, {"producto": "Naranja Jugo", "cantidad": 1.0, "lista": "Delivery"}, {"producto": "Pera", "cantidad": 0.5, "lista": "Delivery"}, {"producto": "Mango", "cantidad": 1.0, "lista": "Delivery"}], "COMBO FULL": [{"producto": "Tomate Perita", "cantidad": 0.5, "lista": "Delivery"}, {"producto": "Palta Hass", "cantidad": 1.0, "lista": "Delivery"}, {"producto": "Papa Cepillada", "cantidad": 1.0, "lista": "Delivery"}, {"producto": "Cebolla", "cantidad": 0.5, "lista": "Delivery"}, {"producto": "Pimiento Rojo", "cantidad": 0.3, "lista": "Delivery"}, {"producto": "Pimiento Verde", "cantidad": 0.3, "lista": "Delivery"}, {"producto": "Zanahoria", "cantidad": 0.5, "lista": "Delivery"}, {"producto": "Zapallito Verde", "cantidad": 0.5, "lista": "Delivery"}, {"producto": "Berenjena", "cantidad": 0.5, "lista": "Delivery"}, {"producto": "Lechuga Manteca", "cantidad": 0.3, "lista": "Delivery"}, {"producto": "Anco / Calabacin", "cantidad": 1.2, "lista": "Delivery"}, {"producto": "Banana Boliviana", "cantidad": 0.5, "lista": "Delivery"}, {"producto": "Kiwi", "cantidad": 0.25, "lista": "Delivery"}, {"producto": "Limon", "cantidad": 0.5, "lista": "Delivery"}, {"producto": "Manzana Roja", "cantidad": 0.5, "lista": "Delivery"}, {"producto": "Naranja Jugo", "cantidad": 1.0, "lista": "Delivery"}, {"producto": "Pera", "cantidad": 0.5, "lista": "Delivery"}]}, "combosDesc": {"COMBO CLASICO": 0.05, "COMBO FRUTERO": 0.05, "COMBO FULL": 0.05}};
+
+// ── STORAGE ─────────────────────────────────────────────────────────
+const SK = 'lv_admin_v2';
+function load(){
+  try{ const d = localStorage.getItem(SK); return d ? JSON.parse(d) : null; }catch(e){ return null; }
+}
+function save(state){ try{ localStorage.setItem(SK, JSON.stringify(state)); }catch(e){} }
+function getState(){
+  const s = load();
+  if(s && s.version === 3) return s;
+  // Primera vez: inicializar desde seed
+  // Inicializar preparados con los productos de Bandejas/Congelados ya existentes
+  const prepBase = SEED.productos
+    .filter(p=>['Bandejas','Congelados'].includes(p.categoria))
+    .map(p=>({
+      nombre: p.nombre,
+      productoBase: p.nombre,
+      grupo: p.grupo,
+      rendimiento: 1,
+      costoIngredientes: 0,
+      costoEmpaque: 0,
+      costoManoObra: 0,
+      ingredientes: [],
+      categoria: p.categoria
+    }));
+  const st = {
+    version: 3,
+    grupos: JSON.parse(JSON.stringify(SEED.grupos)),
+    productos: JSON.parse(JSON.stringify(SEED.productos)),
+    combos: JSON.parse(JSON.stringify(SEED.combos)),
+    combosDesc: JSON.parse(JSON.stringify(SEED.combosDesc)),
+    preparados: prepBase,
+    mercadoActual: {},
+    historialPrecios: {}
+  };
+  save(st); return st;
+}
+let ST = getState();
+
+// ── HELPERS ─────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const fmt = n => '$ '+Math.round(n||0).toLocaleString('es-AR');
+const pct = n => (+(n||0)).toFixed(1)+'%';
+const mbg = m => m>=45?'badge-green':m>=30?'badge-yellow':'badge-red';
+function calcPrecio(costoReal, margenD, margenM, redondeo){
+  const pD = Math.ceil(costoReal/(1-margenD)/redondeo)*redondeo;
+  const pM = Math.ceil(costoReal/(1-margenM)/redondeo)*redondeo;
+  return {pD, pM};
+}
+function calcCostoReal(costoBulto, kgBulto, merma, empaque){
+  const costoUnit = costoBulto / kgBulto;
+  return costoUnit/(1-merma) + (empaque||0);
+}
+function getGrupo(nombre){ return ST.grupos.find(g=>g.nombre===nombre)||ST.grupos[0]; }
+function getProd(nombre){ return ST.productos.find(p=>p.nombre===nombre)||null; }
+function getItemsDeProducto(nombreProd){
+  return SEED.items.filter(it=>it.producto===nombreProd);
+}
+function margenPrecio(costo, precio){ return precio>0?((precio-costo)/precio*100):0; }
+
+// ── NAVEGACIÓN ──────────────────────────────────────────────────────
+function showView(name, btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  $(('view-'+name)).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(name==='inicio') renderInicio();
+  if(name==='mercado') renderMercado();
+  if(name==='combos') renderCombos();
+  if(name==='preparados') renderPreparados();
+  if(name==='config') renderConfig();
+}
+
+// ── MODAL ───────────────────────────────────────────────────────────
+function openModal(titulo, bodyHtml){
+  $('modal-title').textContent = titulo;
+  $('modal-body').innerHTML = bodyHtml;
+  $('modal-bg').classList.add('open');
+}
+function closeModal(e){
+  if(!e||e.target===$('modal-bg')||e.target.classList.contains('modal-close'))
+    $('modal-bg').classList.remove('open');
+}
+
+// ── INICIO ──────────────────────────────────────────────────────────
+function renderInicio(){
+  // KPIs
+  const mgDs = ST.productos.map(p=>p.margenD).filter(x=>x>0);
+  const avgD = mgDs.length ? mgDs.reduce((a,b)=>a+b,0)/mgDs.length : 0;
+  const mgMs = ST.productos.map(p=>p.margenM).filter(x=>x>0);
+  const avgM = mgMs.length ? mgMs.reduce((a,b)=>a+b,0)/mgMs.length : 0;
+  $('kpi-grid').innerHTML = `
+    <div class="kpi"><div class="kpi-val">${ST.productos.length}</div><div class="kpi-lbl">Productos</div></div>
+    <div class="kpi"><div class="kpi-val">${SEED.items.length}</div><div class="kpi-lbl">Items</div></div>
+    <div class="kpi"><div class="kpi-val">${pct(avgD)}</div><div class="kpi-lbl">Mg. Delivery</div></div>
+    <div class="kpi"><div class="kpi-val yellow">${pct(avgM)}</div><div class="kpi-lbl">Mg. Mayorista</div></div>
+    <div class="kpi"><div class="kpi-val blue">${ST.preparados.length}</div><div class="kpi-lbl">Preparados</div></div>
+    <div class="kpi"><div class="kpi-val">${Object.keys(ST.combos).length}</div><div class="kpi-lbl">Combos</div></div>`;
+  // Grupos
+  let html='';
+  ST.grupos.forEach(g=>{
+    const md=(g.margenD*100).toFixed(0), mm=(g.margenM*100).toFixed(0);
+    html+=`<tr><td style="color:var(--text);font-size:11px">${g.nombre.split('(')[0].trim()}</td>
+    <td class="r"><span class="badge ${md>=45?'badge-green':'badge-yellow'}">${md}%</span></td>
+    <td class="r"><span class="badge badge-yellow">${mm}%</span></td>
+    <td class="r" style="font-size:10px;color:var(--text3)">${(g.merma*100).toFixed(0)}%</td></tr>`;
+  });
+  $('grupos-tbl').innerHTML = html;
+}
+
+function buscar(q){
+  const el = $('buscar-results');
+  if(!q||q.length<2){ el.innerHTML=''; return; }
+  const res = SEED.items.filter(x=>x.item.toLowerCase().includes(q.toLowerCase())).slice(0,12);
+  if(!res.length){ el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:8px 0">Sin resultados</div>'; return; }
+  // Buscar precio actualizado en ST.productos
+  let html=`<table class="tbl"><thead><tr><th>Producto</th><th class="r">Delivery</th><th class="r">Mayorista</th><th class="r">Mg</th></tr></thead><tbody>`;
+  res.forEach(it=>{
+    const p = getProd(it.producto);
+    let pD = it.precioD, pM = it.precioM, mg = it.margenD;
+    if(p){
+      const g = getGrupo(p.grupo);
+      const cr = calcCostoReal(p.costoBulto, p.kgBulto, g.merma, g.empaque);
+      const pp = calcPrecio(cr, g.margenD, g.margenM, g.redondeo);
+      // Ajustar por factor de variante
+      const seedItem = SEED.items.find(s=>s.item===it.item);
+      const factor = seedItem ? (seedItem.costo > 0 ? it.precioD/seedItem.precioD : 1) : 1;
+      pD = Math.round(pp.pD * (it.variable.includes('bulto') ? p.kgBulto : 1));
+      pM = Math.round(pp.pM * (it.variable.includes('bulto') ? p.kgBulto : 1));
+      pD = it.precioD; pM = it.precioM; // usar precio guardado en producto
+      mg = it.margenD;
+    }
+    html+=`<tr style="cursor:pointer" onclick="verProducto('${it.producto.replace(/'/g,"\\'")}')">
+    <td><div style="color:var(--text)">${it.item}</div><span class="cat-tag">${it.categoria}</span></td>
+    <td class="r precio-d">${fmt(pD)}</td><td class="r precio-m">${fmt(pM)}</td>
+    <td class="r"><span class="badge ${mbg(mg)}">${mg.toFixed(1)}%</span></td></tr>`;
+  });
+  html+='</tbody></table>';
+  el.innerHTML = html;
+}
+
+function verProducto(nombre){
+  const p = getProd(nombre);
+  if(!p) return;
+  const g = getGrupo(p.grupo);
+  const cr = calcCostoReal(p.costoBulto, p.kgBulto, g.merma, g.empaque);
+  const np = calcPrecio(cr, g.margenD, g.margenM, g.redondeo||100);
+  const items = SEED.items.filter(it=>it.producto===nombre && !it.variable.includes('bulto')).slice(0,8);
+  const grupos_opts = ST.grupos.map(gx=>'<option value="'+gx.nombre+'" '+(p.grupo===gx.nombre?'selected':'')+'>'+gx.nombre.split('(')[0].trim()+'</option>').join('');
+  let html = `<div class="alert alert-blue" style="margin-bottom:10px;font-size:11px">✏ Editá el costo o kg y tocá Guardar para actualizar los precios automáticamente.</div>
+  <div class="grid2" style="margin-bottom:10px">
+    <div class="field"><div class="field-label">Costo del bulto $</div>
+      <input type="number" id="ep-bulto" value="${p.costoBulto}" min="0" style="font-size:14px">
+    </div>
+    <div class="field"><div class="field-label">Kg / unidades por bulto</div>
+      <input type="number" id="ep-kg" value="${p.kgBulto}" min="0" step="0.1" style="font-size:14px">
+    </div>
+  </div>
+  <div class="field" style="margin-bottom:10px"><div class="field-label">Grupo de precio</div>
+    <select id="ep-grupo">${grupos_opts}</select>
+  </div>
+  <div id="ep-preview" class="alert alert-green" style="margin-bottom:10px;font-size:12px">
+    Costo real: <b>${fmt(cr)}</b> &nbsp;·&nbsp; Nuevo D: <b>${fmt(np.pD)}</b> &nbsp;·&nbsp; May: <b>${fmt(np.pM)}</b>
+  </div>
+  <button class="btn btn-primary" onclick="guardarEdicionProducto('${nombre.replace(/'/g,"\\'")}')">✓ Guardar cambios</button>
+  <div class="sdiv" style="margin-top:14px">Precios actuales de venta</div>
+  <table class="tbl"><thead><tr><th>Variante</th><th class="r">Delivery</th><th class="r">Mayorista</th></tr></thead><tbody>`;
+  items.forEach(it=>{
+    html+=`<tr><td>${it.variable}</td><td class="r precio-d">${fmt(it.precioD)}</td><td class="r precio-m">${fmt(it.precioM)}</td></tr>`;
+  });
+  html+='</tbody></table>';
+  openModal(nombre, html);
+  // Activar preview en tiempo real DESPUÉS de que el modal se renderiza
+  setTimeout(()=>{
+    const previewEp=()=>{
+      const cb=parseFloat(document.getElementById('ep-bulto').value)||0;
+      const kg=parseFloat(document.getElementById('ep-kg').value)||1;
+      const gnombre=document.getElementById('ep-grupo').value;
+      const g=ST.grupos.find(x=>x.nombre===gnombre)||ST.grupos[0];
+      const cr=calcCostoReal(cb,kg,g.merma,g.empaque);
+      const np=calcPrecio(cr,g.margenD,g.margenM,g.redondeo||100);
+      const el=document.getElementById('ep-preview');
+      if(el) el.innerHTML='Costo real: <b>'+fmt(cr)+'</b> &nbsp;·&nbsp; Nuevo D: <b>'+fmt(np.pD)+'</b> &nbsp;·&nbsp; May: <b>'+fmt(np.pM)+'</b>';
+    };
+    const b=document.getElementById('ep-bulto');
+    const k=document.getElementById('ep-kg');
+    const g=document.getElementById('ep-grupo');
+    if(b) b.addEventListener('input',previewEp);
+    if(k) k.addEventListener('input',previewEp);
+    if(g) g.addEventListener('change',previewEp);
+  },50);
+}
+
+function guardarEdicionProducto(nombre){
+  const idx = ST.productos.findIndex(x=>x.nombre===nombre);
+  if(idx<0) return;
+  const cb = parseFloat(document.getElementById('ep-bulto').value)||0;
+  const kg = parseFloat(document.getElementById('ep-kg').value)||1;
+  const gnombre = document.getElementById('ep-grupo').value;
+  const g = ST.grupos.find(x=>x.nombre===gnombre)||ST.grupos[0];
+  const cr = calcCostoReal(cb, kg, g.merma, g.empaque);
+  const np = calcPrecio(cr, g.margenD, g.margenM, g.redondeo||100);
+  ST.productos[idx].costoBulto = cb;
+  ST.productos[idx].kgBulto = kg;
+  ST.productos[idx].grupo = gnombre;
+  ST.productos[idx].costoUnit = cb/kg;
+  ST.productos[idx].costoReal = Math.round(cr*100)/100;
+  ST.productos[idx].precioD = np.pD;
+  ST.productos[idx].precioM = np.pM;
+  ST.productos[idx].margenD = g.margenD*100;
+  ST.productos[idx].margenM = g.margenM*100;
+  save(ST);
+  // Actualizar preview
+  document.getElementById('ep-preview').innerHTML =
+    '✓ Guardado — D: <b>'+fmt(np.pD)+'</b> · May: <b>'+fmt(np.pM)+'</b>';
+  document.getElementById('ep-preview').className = 'alert alert-green';
+  renderInicio();
+}
+
+// ── MERCADO ─────────────────────────────────────────────────────────
+function initMercadoSelect(){
+  const sel = $('merca-sel');
+  while(sel.options.length>1) sel.remove(1);
+  ST.productos.filter(p=>p.activo&&p.categoria!=='Combos').sort((a,b)=>a.nombre.localeCompare(b.nombre)).forEach(p=>{
+    const opt=document.createElement('option');
+    opt.value=p.nombre;
+    opt.textContent=p.nombre+' · '+p.categoria;
+    sel.appendChild(opt);
+  });
+}
+
+function addMercado(nombre){
+  if(!nombre||ST.mercadoActual[nombre]) return;
+  const p = getProd(nombre);
+  if(!p) return;
+  ST.mercadoActual[nombre]={cantBultos:1,nuevoCosto:p.costoBulto,nuevoKg:p.kgBulto,usarCompra:false};
+  save(ST); renderMercado();
+}
+
+function renderMercado(){
+  initMercadoSelect();
+  const keys = Object.keys(ST.mercadoActual);
+  $('merca-empty').style.display = keys.length?'none':'block';
+  $('merca-footer').style.display = keys.length?'block':'none';
+  let html='', totalBultos=0, totalInv=0, cambios=0;
+  keys.forEach(nombre=>{
+    const it=ST.mercadoActual[nombre], p=getProd(nombre);
+    if(!p) return;
+    totalBultos+=it.cantBultos;
+    totalInv+=it.cantBultos*it.nuevoCosto;
+    if(it.usarCompra) cambios++;
+    const g=getGrupo(p.grupo);
+    const cr=calcCostoReal(it.nuevoCosto/it.nuevoKg*it.nuevoKg, it.nuevoKg, g.merma, g.empaque);
+    // calcular nuevo precio
+    const np=calcPrecio(cr/it.nuevoKg, g.margenD, g.margenM, g.redondeo);
+    const varPct=p.costoBulto>0?((it.nuevoCosto-p.costoBulto)/p.costoBulto*100):0;
+    const varCol=varPct>5?'var(--red)':varPct<-5?'var(--green)':'var(--text3)';
+    html+=`<div class="card" style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div><div style="font-size:13px;font-weight:500;color:var(--text)">${nombre}</div>
+        <div style="font-size:10px;color:var(--text3)">Actual: ${fmt(p.costoBulto)}/bulto · ${p.kgBulto} ${p.unidad}/bulto</div></div>
+        <button class="del-btn" onclick="removeMercado('${nombre.replace(/'/g,"\\'")}')">✕</button>
+      </div>
+      <div class="grid4" style="align-items:end">
+        <div><div class="field-label">Bultos</div><input type="number" min="0" step="1" value="${it.cantBultos}" style="font-size:13px;padding:6px 8px" onchange="updMercado('${nombre.replace(/'/g,"\\'")}','cantBultos',this.value)"></div>
+        <div><div class="field-label">Nuevo costo</div><input type="number" min="0" value="${it.nuevoCosto}" style="font-size:13px;padding:6px 8px" onchange="updMercado('${nombre.replace(/'/g,"\\'")}','nuevoCosto',this.value)"></div>
+        <div><div class="field-label">Kg/Un bulto</div><input type="number" min="0" step="0.1" value="${it.nuevoKg}" style="font-size:13px;padding:6px 8px" onchange="updMercado('${nombre.replace(/'/g,"\\'")}','nuevoKg',this.value)"></div>
+        <div><div class="field-label">¿Actualizar?</div><button class="si-btn ${it.usarCompra?'active':'inactive'}" onclick="toggleSI('${nombre.replace(/'/g,"\\'")}')">
+          ${it.usarCompra?'✓ SI':'NO'}</button></div>
+      </div>
+      ${it.usarCompra?`<div class="alert alert-green" style="margin-top:8px;font-size:11px">
+        <span style="color:${varCol}"><b>${varPct>0?'▲':'▼'} ${Math.abs(varPct).toFixed(1)}% costo</b></span>
+        &nbsp;·&nbsp; Nuevo D: <b>${fmt(np.pD)}</b> &nbsp;·&nbsp; May: <b>${fmt(np.pM)}</b>
+        &nbsp;·&nbsp; Costo unit: <b>${fmt(cr/it.nuevoKg)}</b>
+      </div>`:''}
+    </div>`;
+  });
+  $('merca-lista').innerHTML = html;
+  $('merca-totals').innerHTML=`
+    <div class="t-item"><div class="t-val">${totalBultos}</div><div class="t-lbl">Bultos</div></div>
+    <div class="t-item"><div class="t-val">${fmt(totalInv)}</div><div class="t-lbl">Inversión</div></div>
+    <div class="t-item"><div class="t-val">${cambios}</div><div class="t-lbl">Con cambio</div></div>`;
+}
+
+function updMercado(nombre,campo,val){
+  if(!ST.mercadoActual[nombre]) return;
+  ST.mercadoActual[nombre][campo]=parseFloat(val)||0;
+  // Si está marcado SI, actualizar inmediatamente
+  if(ST.mercadoActual[nombre].usarCompra) aplicarCambio(nombre);
+  save(ST); renderMercado();
+}
+
+function toggleSI(nombre){
+  if(!ST.mercadoActual[nombre]) return;
+  ST.mercadoActual[nombre].usarCompra=!ST.mercadoActual[nombre].usarCompra;
+  if(ST.mercadoActual[nombre].usarCompra) aplicarCambio(nombre);
+  save(ST); renderMercado();
+}
+
+function aplicarCambio(nombre){
+  const it=ST.mercadoActual[nombre], p=getProd(nombre);
+  if(!p||!it) return;
+  // Actualizar producto en ST
+  const idx=ST.productos.findIndex(x=>x.nombre===nombre);
+  if(idx<0) return;
+  const g=getGrupo(p.grupo);
+  const costoUnitNuevo = it.nuevoCosto / it.nuevoKg;
+  const cr = costoUnitNuevo/(1-g.merma)+(g.empaque||0);
+  const np = calcPrecio(cr, g.margenD, g.margenM, g.redondeo);
+  ST.productos[idx].costoBulto = it.nuevoCosto;
+  ST.productos[idx].kgBulto = it.nuevoKg;
+  ST.productos[idx].costoUnit = costoUnitNuevo;
+  ST.productos[idx].costoReal = Math.round(cr*100)/100;
+  ST.productos[idx].precioD = np.pD;
+  ST.productos[idx].precioM = np.pM;
+  // Guardar en historial
+  if(!ST.historialPrecios[nombre]) ST.historialPrecios[nombre]=[];
+  ST.historialPrecios[nombre].push({fecha:new Date().toLocaleDateString('es-AR'),costo:it.nuevoCosto,kg:it.nuevoKg});
+}
+
+function removeMercado(nombre){
+  delete ST.mercadoActual[nombre];
+  save(ST); renderMercado();
+}
+
+function clearMercado(){
+  if(confirm('¿Limpiar toda la lista de compra del día?')){
+    ST.mercadoActual={};
+    save(ST); renderMercado();
+  }
+}
+
+function exportMercado(){
+  const keys=Object.keys(ST.mercadoActual);
+  let txt='📦 COMPRA DEL DÍA — LaVerdu\n'+new Date().toLocaleDateString('es-AR')+'\n\n';
+  let total=0;
+  keys.forEach(n=>{
+    const it=ST.mercadoActual[n];
+    const sub=it.cantBultos*it.nuevoCosto;
+    total+=sub;
+    txt+=`• ${n}: ${it.cantBultos} bulto(s) × ${fmt(it.nuevoCosto)} = ${fmt(sub)}${it.usarCompra?' ✓':''}  \n`;
+  });
+  txt+=`\nTOTAL: ${fmt(total)}`;
+  navigator.clipboard?.writeText(txt).then(()=>alert('✓ Copiado al portapapeles')).catch(()=>alert(txt));
+}
+
+// ── VENTA ────────────────────────────────────────────────────────────
+let ventaItems=[];
+
+function ventaSearch(q){
+  const el=$('v-results');
+  if(!q||q.length<2){ el.innerHTML=''; return; }
+  const tipo=$('v-tipo').value;
+  const res=SEED.items.filter(x=>
+    x.item.toLowerCase().includes(q.toLowerCase())&&
+    !x.variable.includes('bulto')&&
+    (tipo==='D'?x.precioD>0:x.precioM>0)
+  ).slice(0,10);
+  if(!res.length){ el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:6px 0">Sin resultados</div>'; return; }
+  let html='';
+  res.forEach(it=>{
+    const precio=tipo==='D'?it.precioD:it.precioM;
+    const mg=tipo==='D'?it.margenD:it.margenM;
+    html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="addVenta('${it.item.replace(/'/g,"\\'")}')">
+    <div><div style="font-size:12px;color:var(--text)">${it.item}</div><span class="cat-tag">${it.categoria} · ${mg.toFixed(0)}%</span></div>
+    <div style="text-align:right"><div class="${tipo==='D'?'precio-d':'precio-m'}" style="font-size:13px">${fmt(precio)}</div><div style="font-size:10px;color:var(--text3)">+ agregar</div></div></div>`;
+  });
+  el.innerHTML=html;
+}
+
+function addVenta(itemNombre){
+  const tipo=$('v-tipo').value;
+  const it=SEED.items.find(x=>x.item===itemNombre);
+  if(!it) return;
+  const precio=tipo==='D'?it.precioD:it.precioM;
+  const ex=ventaItems.find(x=>x.item===itemNombre&&x.tipo===tipo);
+  if(ex){ ex.qty++; }
+  else{ ventaItems.push({item:itemNombre,tipo,precio,costo:it.costo,margen:tipo==='D'?it.margenD:it.margenM,qty:1}); }
+  $('v-buscar').value=''; $('v-results').innerHTML='';
+  renderVenta();
+}
+
+function renderVenta(){
+  $('v-empty').style.display=ventaItems.length?'none':'block';
+  $('v-content').style.display=ventaItems.length?'block':'none';
+  let html='', sub=0, cos=0;
+  ventaItems.forEach((it,idx)=>{
+    const s=it.precio*it.qty, c=it.costo*it.qty;
+    sub+=s; cos+=c;
+    const lbl=it.tipo==='D'?'<span style="color:var(--green);font-size:10px">D</span>':'<span style="color:var(--yellow);font-size:10px">M</span>';
+    html+=`<div class="venta-row">
+    <div><div style="font-size:12px;color:var(--text)">${lbl} ${it.item}</div><div style="font-size:10px;color:var(--text3)">${fmt(it.precio)} c/u</div></div>
+    <div class="qty-ctrl"><button class="qty-btn" onclick="chgVenta(${idx},-1)">−</button><span class="qty-val">${it.qty}</span><button class="qty-btn" onclick="chgVenta(${idx},1)">+</button></div>
+    <div class="${it.tipo==='D'?'precio-d':'precio-m'}" style="font-size:13px">${fmt(s)}</div>
+    <button class="del-btn" onclick="delVenta(${idx})">✕</button></div>`;
+  });
+  $('v-lista').innerHTML=html;
+  const gan=sub-cos, mg=sub>0?(gan/sub*100):0;
+  $('v-sub').textContent=fmt(sub);
+  $('v-cos').textContent=fmt(cos);
+  $('v-gan').textContent=fmt(gan);
+  $('v-mg').textContent=mg.toFixed(1)+'%';
+}
+
+function chgVenta(i,d){ ventaItems[i].qty=Math.max(1,ventaItems[i].qty+d); renderVenta(); }
+function delVenta(i){ ventaItems.splice(i,1); renderVenta(); }
+function clearVenta(){ ventaItems=[]; renderVenta(); }
+function cobrarVenta(){
+  const sub=ventaItems.reduce((s,it)=>s+it.precio*it.qty,0);
+  const gan=sub-ventaItems.reduce((s,it)=>s+it.costo*it.qty,0);
+  alert(`✓ Venta registrada\nTotal: ${fmt(sub)}\nGanancia: ${fmt(gan)}`);
+  clearVenta();
+}
+
+// ── COMBOS ──────────────────────────────────────────────────────────
+function renderCombos(){
+  let html='';
+  Object.entries(ST.combos).forEach(([nombre,items])=>{
+    const desc=ST.combosDesc[nombre]||0;
+    let subtotal=0, costoTotal=0;
+    items.forEach(it=>{
+      const p=getProd(it.producto);
+      if(!p) return;
+      const pUnit=it.lista==='Delivery'?p.precioD:p.precioM;
+      subtotal+=pUnit*it.cantidad;
+      costoTotal+=p.costoReal*it.cantidad;
+    });
+    const precioFinal=Math.round(subtotal*(1-desc));
+    const gan=precioFinal-costoTotal;
+    const mg=precioFinal>0?(gan/precioFinal*100):0;
+    html+=`<div class="combo-card">
+      <div class="combo-header">
+        <div><div class="combo-nombre">${nombre}</div><div style="font-size:10px;color:var(--text3)">Descuento: ${(desc*100).toFixed(0)}% · ${items.length} items</div></div>
+        <div style="text-align:right">
+          <div class="combo-precio-big">${fmt(precioFinal)}</div>
+          <div style="font-size:10px;color:var(--text3)">precio final</div>
+        </div>
+      </div>
+      <div class="combo-stats">
+        <div class="combo-stat">Lista: <strong>${fmt(subtotal)}</strong></div>
+        <div class="combo-stat">Costo: <strong>${fmt(costoTotal)}</strong></div>
+        <div class="combo-stat">Ganancia: <strong>${fmt(gan)}</strong></div>
+        <div class="combo-stat">Margen: <span class="badge ${mbg(mg)}">${mg.toFixed(1)}%</span></div>
+      </div>
+      <div class="btn-row" style="margin-top:8px">
+        <button class="btn btn-ghost btn-sm" onclick="editarCombo('${nombre.replace(/'/g,"\\'")}')">✏ Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarCombo('${nombre.replace(/'/g,"\\'")}')">🗑 Eliminar</button>
+      </div>
+    </div>`;
+  });
+  $('combos-lista').innerHTML=html;
+}
+
+function calcCombo(){
+  const lista=parseFloat($('calc-lista').value)||0;
+  const desc=(parseFloat($('calc-desc').value)||0)/100;
+  const costo=parseFloat($('calc-costo').value)||0;
+  if(!lista){ $('calc-result').style.display='none'; return; }
+  const pf=lista*(1-desc), gan=pf-costo, mg=pf>0?(gan/pf*100):0;
+  const el=$('calc-result');
+  el.style.display='block';
+  el.innerHTML=`Precio final: <b>${fmt(pf)}</b> &nbsp;·&nbsp; Ganancia: <b>${fmt(gan)}</b> &nbsp;·&nbsp; Margen: <b>${mg.toFixed(1)}%</b>`;
+}
+
+function abrirNuevoCombo(){
+  const nombre=prompt('Nombre del nuevo combo:');
+  if(!nombre||!nombre.trim()) return;
+  const n=nombre.trim().toUpperCase();
+  if(ST.combos[n]){ alert('Ya existe un combo con ese nombre'); return; }
+  ST.combos[n]=[]; ST.combosDesc[n]=0.05;
+  save(ST); renderCombos(); editarCombo(n);
+}
+
+function editarCombo(nombre){
+  const items=ST.combos[nombre]||[];
+  const desc=(ST.combosDesc[nombre]||0)*100;
+  let prods_opts=ST.productos.filter(p=>p.activo&&p.categoria!=='Combos').sort((a,b)=>a.nombre.localeCompare(b.nombre)).map(p=>`<option value="${p.nombre}">${p.nombre}</option>`).join('');
+  let items_html=items.map((it,i)=>`
+    <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:12px;color:var(--text)">${it.producto}</div>
+      <input type="number" value="${it.cantidad}" min="0" step="0.1" style="width:70px;font-size:12px;padding:4px 6px" onchange="updComboItem('${nombre.replace(/'/g,"\\'")}',${i},'cantidad',this.value)">
+      <select style="width:90px;font-size:11px;padding:4px 5px" onchange="updComboItem('${nombre.replace(/'/g,"\\'")}',${i},'lista',this.value)">
+        <option ${it.lista==='Delivery'?'selected':''}>Delivery</option>
+        <option ${it.lista==='Mayorista'?'selected':''}>Mayorista</option>
+      </select>
+      <button class="del-btn" onclick="delComboItem('${nombre.replace(/'/g,"\\'")}',${i});renderComboEdit('${nombre.replace(/'/g,"\\'")}')">✕</button>
+    </div>`).join('');
+  const body=`
+    <div class="field"><div class="field-label">Descuento %</div>
+      <input type="number" id="combo-desc-edit" value="${desc}" min="0" max="100" onchange="ST.combosDesc['${nombre}']=this.value/100;save(ST)">
+    </div>
+    <div class="sdiv">Productos del combo</div>
+    <div id="combo-items-edit">${items_html||'<div style="color:var(--text3);font-size:12px;padding:8px 0">Sin productos aún</div>'}</div>
+    <div class="sdiv" style="margin-top:12px">Agregar producto</div>
+    <div class="grid2" style="margin-bottom:8px">
+      <select id="new-combo-prod">${prods_opts}</select>
+      <input type="number" id="new-combo-cant" value="1" min="0" step="0.1" placeholder="Cantidad">
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="addComboItem('${nombre.replace(/'/g,"\\'")}')">+ Agregar</button>`;
+  openModal('Editar: '+nombre, body);
+}
+
+function renderComboEdit(nombre){
+  const items=ST.combos[nombre]||[];
+  let html=items.map((it,i)=>`
+    <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:12px;color:var(--text)">${it.producto}</div>
+      <input type="number" value="${it.cantidad}" min="0" step="0.1" style="width:70px;font-size:12px;padding:4px 6px" onchange="updComboItem('${nombre.replace(/'/g,"\\'")}',${i},'cantidad',this.value)">
+      <select style="width:90px;font-size:11px;padding:4px 5px" onchange="updComboItem('${nombre.replace(/'/g,"\\'")}',${i},'lista',this.value)">
+        <option ${it.lista==='Delivery'?'selected':''}>Delivery</option>
+        <option ${it.lista==='Mayorista'?'selected':''}>Mayorista</option>
+      </select>
+      <button class="del-btn" onclick="delComboItem('${nombre.replace(/'/g,"\\'")}',${i});renderComboEdit('${nombre.replace(/'/g,"\\'")}')">✕</button>
+    </div>`).join('');
+  $('combo-items-edit').innerHTML=html||'<div style="color:var(--text3);font-size:12px;padding:8px 0">Sin productos</div>';
+}
+
+function addComboItem(nombre){
+  const prod=$('new-combo-prod').value, cant=parseFloat($('new-combo-cant').value)||1;
+  if(!prod) return;
+  if(!ST.combos[nombre]) ST.combos[nombre]=[];
+  ST.combos[nombre].push({producto:prod,cantidad:cant,lista:'Delivery'});
+  save(ST); renderComboEdit(nombre);
+}
+function delComboItem(nombre,i){ ST.combos[nombre].splice(i,1); save(ST); }
+function updComboItem(nombre,i,campo,val){
+  if(!ST.combos[nombre]||!ST.combos[nombre][i]) return;
+  ST.combos[nombre][i][campo]=campo==='cantidad'?parseFloat(val):val;
+  save(ST);
+}
+function eliminarCombo(nombre){
+  if(confirm('¿Eliminar el combo '+nombre+'?')){ delete ST.combos[nombre]; delete ST.combosDesc[nombre]; save(ST); renderCombos(); }
+}
+
+// ── PREPARADOS ──────────────────────────────────────────────────────
+function renderPreparados(){
+  $('prep-empty').style.display=ST.preparados.length?'none':'block';
+  let html='';
+  ST.preparados.forEach((p,i)=>{
+    const costoTotal=calcCostoPrep(p);
+    const g=getGrupo(p.grupo||'Especialidades / Premium (champi/berries/palta)');
+    const np=calcPrecio(costoTotal, g.margenD, g.margenM, g.redondeo||100);
+    html+=`<div class="prep-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div><div style="font-size:13px;font-weight:500;color:var(--text)">${p.nombre}</div>
+        <div style="font-size:10px;color:var(--text3)">${p.rendimiento||1} unid/batch · ${p.grupo||'Premium'}</div></div>
+        <div style="text-align:right">
+          <div class="precio-d" style="font-size:16px">${fmt(np.pD)}</div>
+          <div style="font-size:10px;color:var(--text3)">delivery</div>
+        </div>
+      </div>
+      <div class="grid4" style="font-size:11px;color:var(--text2);margin-bottom:8px">
+        <div>Ingredientes<br><b style="color:var(--text)">${fmt(p.costoIngredientes||0)}</b></div>
+        <div>Empaque<br><b style="color:var(--text)">${fmt(p.costoEmpaque||0)}</b></div>
+        <div>Mano obra<br><b style="color:var(--text)">${fmt(p.costoManoObra||0)}</b></div>
+        <div>Costo total<br><b style="color:var(--green)">${fmt(costoTotal)}</b></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost btn-sm" onclick="editarPrep(${i})">✏ Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarPrep(${i})">🗑</button>
+      </div>
+    </div>`;
+  });
+  $('prep-lista').innerHTML=html;
+}
+
+function calcCostoPrep(p){
+  const rend=p.rendimiento||1;
+  return ((p.costoIngredientes||0)+(p.costoEmpaque||0)+(p.costoManoObra||0))/rend;
+}
+
+function abrirNuevoPrep(){
+  // Mostrar modal para elegir: nuevo desde cero o vincular producto existente
+  const prods_bdy_opts = ST.productos
+    .filter(p=>p.activo && ['Bandejas','Congelados'].includes(p.categoria))
+    .sort((a,b)=>a.nombre.localeCompare(b.nombre))
+    .map(p=>`<option value="${p.nombre}">${p.nombre} (${p.categoria})</option>`).join('');
+  const body = `
+    <div style="margin-bottom:12px;font-size:12px;color:var(--text2)">
+      Elegí si querés crear un preparado completamente nuevo, o vincular uno de los productos de Bandejas/Congelados que ya están cargados en la web para poder gestionar sus costos reales.
+    </div>
+    <div class="sdiv">Nuevo preparado desde cero</div>
+    <button class="btn btn-ghost" style="width:100%;margin-bottom:14px" onclick="crearPrepNuevo()">+ Crear preparado nuevo</button>
+    <div class="sdiv">Vincular producto existente (Bandejas / Congelados)</div>
+    <div class="field"><select id="prep-existente">${prods_bdy_opts}</select></div>
+    <button class="btn btn-primary" onclick="crearPrepDesdeExistente()">Vincular y configurar costos</button>`;
+  openModal('Nuevo preparado', body);
+}
+
+function crearPrepNuevo(){
+  closeModal();
+  const p={nombre:'',productoBase:null,grupo:'Especialidades / Premium (champi/berries/palta)',rendimiento:1,costoIngredientes:0,costoEmpaque:0,costoManoObra:0,ingredientes:[],categoria:'Preparado'};
+  ST.preparados.push(p);
+  save(ST); renderPreparados(); editarPrep(ST.preparados.length-1);
+}
+
+function crearPrepDesdeExistente(){
+  const nombre = document.getElementById('prep-existente').value;
+  if(!nombre) return;
+  // Si ya existe un preparado vinculado a ese producto, no duplicar
+  if(ST.preparados.find(x=>x.productoBase===nombre)){
+    alert('Ya hay un preparado vinculado a '+nombre); return;
+  }
+  const prod = getProd(nombre);
+  closeModal();
+  const p={
+    nombre: nombre,
+    productoBase: nombre,
+    grupo: prod?prod.grupo:'Especialidades / Premium (champi/berries/palta)',
+    rendimiento: 1,
+    costoIngredientes: 0,
+    costoEmpaque: 0,
+    costoManoObra: 0,
+    ingredientes: [],
+    categoria: prod?prod.categoria:'Bandejas'
+  };
+  ST.preparados.push(p);
+  save(ST); renderPreparados(); editarPrep(ST.preparados.length-1);
+}
+
+function editarPrep(i){
+  const p=ST.preparados[i];
+  const grupos_opts=ST.grupos.map(g=>`<option value="${g.nombre}" ${p.grupo===g.nombre?'selected':''}>${g.nombre}</option>`).join('');
+  const prods_opts=ST.productos.filter(x=>x.activo&&x.categoria!=='Combos').sort((a,b)=>a.nombre.localeCompare(b.nombre)).map(x=>`<option value="${x.nombre}">${x.nombre}</option>`).join('');
+  const ings_html=(p.ingredientes||[]).map((ing,j)=>`
+    <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:5px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:11px;color:var(--text)">${ing.producto} x${ing.cantidad}${ing.unidad||'kg'}</div>
+      <div style="font-size:10px;color:var(--text3)">≈${fmt(ing.costo||0)}</div>
+      <button class="del-btn" onclick="delIngPrep(${i},${j})">✕</button>
+    </div>`).join('');
+  const vinculado = p.productoBase ? `<div class="alert alert-blue" style="margin-bottom:8px;font-size:11px">🔗 Vinculado a "<b>${p.productoBase}</b>". Al guardar costos, el precio del producto en la web se actualiza automáticamente.</div>` : '';
+  const body=`${vinculado}
+    <div class="field"><div class="field-label">Nombre del preparado</div>
+      <input type="text" id="prep-nombre" value="${p.nombre}" placeholder="Ej: Repollo Morado Rallado 300g" onchange="updPrep(${i},'nombre',this.value)">
+    </div>
+    <div class="grid2">
+      <div class="field"><div class="field-label">Grupo de precio</div>
+        <select id="prep-grupo" onchange="updPrep(${i},'grupo',this.value)">${grupos_opts}</select>
+      </div>
+      <div class="field"><div class="field-label">Rendimiento (unidades)</div>
+        <input type="number" id="prep-rend" value="${p.rendimiento}" min="1" onchange="updPrep(${i},'rendimiento',parseFloat(this.value)||1)">
+      </div>
+    </div>
+    <div class="sdiv">Costos (por batch completo)</div>
+    <div class="grid3">
+      <div class="field"><div class="field-label">Ingredientes $</div>
+        <input type="number" id="prep-ing-cost" value="${p.costoIngredientes}" min="0" onchange="updPrep(${i},'costoIngredientes',parseFloat(this.value)||0)">
+      </div>
+      <div class="field"><div class="field-label">Empaque $</div>
+        <input type="number" id="prep-emp" value="${p.costoEmpaque}" min="0" onchange="updPrep(${i},'costoEmpaque',parseFloat(this.value)||0)">
+      </div>
+      <div class="field"><div class="field-label">Mano de obra $</div>
+        <input type="number" id="prep-mdo" value="${p.costoManoObra}" min="0" onchange="updPrep(${i},'costoManoObra',parseFloat(this.value)||0)">
+      </div>
+    </div>
+    <div id="prep-calc" class="alert alert-green" style="margin-bottom:8px"></div>
+    <div class="sdiv">Ingredientes (referencia)</div>
+    <div id="prep-ings">${ings_html||'<div style="color:var(--text3);font-size:11px;padding:6px 0">Sin ingredientes cargados</div>'}</div>
+    <div class="grid3" style="margin-top:8px">
+      <select id="new-ing-prod">${prods_opts}</select>
+      <input type="number" id="new-ing-cant" value="0.3" step="0.1" min="0" placeholder="kg/u">
+      <button class="btn btn-ghost btn-sm" onclick="addIngPrep(${i})">+ Agregar</button>
+    </div>`;
+  openModal((p.nombre||'Nuevo preparado'), body);
+  updPrepCalc(i);
+}
+
+function updPrep(i,campo,val){
+  ST.preparados[i][campo]=val;
+  // Si tiene producto base vinculado, actualizar también el producto en ST
+  actualizarProductoDesdePrep(i);
+  save(ST); updPrepCalc(i); renderPreparados();
+}
+
+function actualizarProductoDesdePrep(i){
+  const p=ST.preparados[i];
+  if(!p.productoBase) return;
+  const idx=ST.productos.findIndex(x=>x.nombre===p.productoBase);
+  if(idx<0) return;
+  const ct=calcCostoPrep(p);
+  if(ct<=0) return;
+  const g=getGrupo(p.grupo);
+  const np=calcPrecio(ct, g.margenD, g.margenM, g.redondeo||100);
+  ST.productos[idx].costoReal=Math.round(ct*100)/100;
+  ST.productos[idx].precioD=np.pD;
+  ST.productos[idx].precioM=np.pM;
+  ST.productos[idx].margenD=g.margenD*100;
+  ST.productos[idx].margenM=g.margenM*100;
+  ST.productos[idx].grupo=p.grupo;
+}
+
+function updPrepCalc(i){
+  const p=ST.preparados[i], el=$('prep-calc');
+  if(!el) return;
+  const ct=calcCostoPrep(p);
+  const g=getGrupo(p.grupo);
+  const np=calcPrecio(ct, g.margenD, g.margenM, g.redondeo||100);
+  el.innerHTML=`Costo/unidad: <b>${fmt(ct)}</b> &nbsp;·&nbsp; Precio sugerido D: <b>${fmt(np.pD)}</b> &nbsp;·&nbsp; May: <b>${fmt(np.pM)}</b>`;
+}
+
+function addIngPrep(i){
+  const prod=$('new-ing-prod').value, cant=parseFloat($('new-ing-cant').value)||0;
+  if(!prod) return;
+  const p=getProd(prod);
+  const costo=p?(p.costoReal*cant):0;
+  if(!ST.preparados[i].ingredientes) ST.preparados[i].ingredientes=[];
+  ST.preparados[i].ingredientes.push({producto:prod,cantidad:cant,unidad:'kg',costo});
+  save(ST); renderPreparados(); editarPrep(i);
+}
+
+function delIngPrep(i,j){
+  ST.preparados[i].ingredientes.splice(j,1);
+  save(ST); renderPreparados(); editarPrep(i);
+}
+
+function eliminarPrep(i){
+  if(confirm('¿Eliminar preparado '+ST.preparados[i].nombre+'?')){
+    ST.preparados.splice(i,1); save(ST); renderPreparados();
+  }
+}
+
+// ── NUEVO PRODUCTO ──────────────────────────────────────────────────
+function abrirNuevoProducto(){
+  const categorias = [...new Set(SEED.productos.map(p=>p.categoria))].sort();
+  const cat_opts = categorias.map(c=>`<option value="${c}">${c}</option>`).join('');
+  const grupos_opts = ST.grupos.map(g=>'<option value="'+g.nombre+'">'+g.nombre.split('(')[0].trim()+'</option>').join('');
+  const unidades_opts = ['kg','unidad','lt','g'].map(u=>`<option value="${u}">${u}</option>`).join('');
+  const body = `
+    <div class="alert alert-blue" style="margin-bottom:12px;font-size:11px">
+      El precio de venta se calcula automáticamente con el margen del grupo seleccionado.
+    </div>
+    <div class="field"><div class="field-label">Nombre del producto *</div>
+      <input type="text" id="np-nombre" placeholder="Ej: Kale, Pak Choi, etc.">
+    </div>
+    <div class="grid2">
+      <div class="field"><div class="field-label">Categoría</div>
+        <select id="np-cat">${cat_opts}</select>
+      </div>
+      <div class="field"><div class="field-label">Unidad base</div>
+        <select id="np-unidad">${unidades_opts}</select>
+      </div>
+    </div>
+    <div class="field"><div class="field-label">Grupo de precio</div>
+      <select id="np-grupo" onchange="previewNP()">${grupos_opts}</select>
+    </div>
+    <div class="grid2">
+      <div class="field"><div class="field-label">Costo del bulto $</div>
+        <input type="number" id="np-bulto" value="0" min="0" oninput="previewNP()">
+      </div>
+      <div class="field"><div class="field-label">Kg / unidades por bulto</div>
+        <input type="number" id="np-kg" value="1" min="0.01" step="0.1" oninput="previewNP()">
+      </div>
+    </div>
+    <div id="np-preview" class="alert alert-green" style="margin-bottom:12px;font-size:12px">
+      Ingresá costo y kg para ver el precio sugerido
+    </div>
+    <button class="btn btn-primary" onclick="guardarNuevoProducto()">✓ Agregar producto</button>`;
+  openModal('Nuevo producto', body);
+}
+
+function previewNP(){
+  const cb = parseFloat(document.getElementById('np-bulto')?.value)||0;
+  const kg = parseFloat(document.getElementById('np-kg')?.value)||1;
+  const gnombre = document.getElementById('np-grupo')?.value;
+  if(!gnombre||cb<=0) return;
+  const g = ST.grupos.find(x=>x.nombre===gnombre)||ST.grupos[0];
+  const cr = calcCostoReal(cb, kg, g.merma, g.empaque);
+  const np = calcPrecio(cr, g.margenD, g.margenM, g.redondeo||100);
+  const el = document.getElementById('np-preview');
+  if(el) el.innerHTML = 'Costo unit: <b>'+fmt(cr)+'</b> &nbsp;·&nbsp; Precio D: <b>'+fmt(np.pD)+'</b> &nbsp;·&nbsp; May: <b>'+fmt(np.pM)+'</b>';
+}
+
+function guardarNuevoProducto(){
+  const nombre = document.getElementById('np-nombre')?.value?.trim();
+  if(!nombre){ alert('Ingresá un nombre para el producto'); return; }
+  if(ST.productos.find(p=>p.nombre.toLowerCase()===nombre.toLowerCase())){
+    alert('Ya existe un producto con ese nombre'); return;
+  }
+  const cb = parseFloat(document.getElementById('np-bulto')?.value)||0;
+  const kg = parseFloat(document.getElementById('np-kg')?.value)||1;
+  const cat = document.getElementById('np-cat')?.value||'Verduras';
+  const unidad = document.getElementById('np-unidad')?.value||'kg';
+  const gnombre = document.getElementById('np-grupo')?.value||ST.grupos[0].nombre;
+  const g = ST.grupos.find(x=>x.nombre===gnombre)||ST.grupos[0];
+  const cr = calcCostoReal(cb, kg, g.merma, g.empaque);
+  const np = calcPrecio(cr, g.margenD, g.margenM, g.redondeo||100);
+  const nuevoProd = {
+    nombre, categoria: cat, grupo: gnombre, unidad,
+    costoBulto: cb, kgBulto: kg,
+    costoUnit: kg>0?cb/kg:0,
+    costoReal: Math.round(cr*100)/100,
+    precioD: np.pD, precioM: np.pM,
+    margenD: g.margenD*100, margenM: g.margenM*100,
+    activo: true
+  };
+  ST.productos.push(nuevoProd);
+  save(ST);
+  closeModal();
+  renderInicio();
+  // Mostrar confirmación
+  const el = document.getElementById('buscar-results');
+  if(el) el.innerHTML = '<div class="alert alert-green" style="margin-top:6px">✓ <b>'+nombre+'</b> agregado — D: '+fmt(np.pD)+' · May: '+fmt(np.pM)+'</div>';
+  setTimeout(()=>{ if(el) el.innerHTML=''; }, 4000);
+}
+
+// ── CONFIG ───────────────────────────────────────────────────────────
+function renderConfig(){
+  let html='';
+  ST.grupos.forEach((g,i)=>{
+    html+=`<div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+      <div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:6px">${g.nombre}</div>
+      <div class="grid4">
+        <div><div class="field-label">Mg. Del %</div>
+          <input type="number" value="${(g.margenD*100).toFixed(0)}" min="0" max="100" style="font-size:12px;padding:6px 8px" onchange="updGrupo(${i},'margenD',this.value/100)">
+        </div>
+        <div><div class="field-label">Mg. May %</div>
+          <input type="number" value="${(g.margenM*100).toFixed(0)}" min="0" max="100" style="font-size:12px;padding:6px 8px" onchange="updGrupo(${i},'margenM',this.value/100)">
+        </div>
+        <div><div class="field-label">Merma %</div>
+          <input type="number" value="${(g.merma*100).toFixed(0)}" min="0" max="100" style="font-size:12px;padding:6px 8px" onchange="updGrupo(${i},'merma',this.value/100)">
+        </div>
+        <div><div class="field-label">Empaque $</div>
+          <input type="number" value="${g.empaque||0}" min="0" style="font-size:12px;padding:6px 8px" onchange="updGrupo(${i},'empaque',parseFloat(this.value)||0)">
+        </div>
+      </div>
+    </div>`;
+  });
+  $('config-grupos').innerHTML=html;
+}
+
+function updGrupo(i,campo,val){
+  ST.grupos[i][campo]=val;
+  // Recalcular precios de todos los productos de este grupo
+  const g=ST.grupos[i];
+  ST.productos.forEach((p,pi)=>{
+    if(p.grupo!==g.nombre) return;
+    const cr=calcCostoReal(p.costoBulto, p.kgBulto, g.merma, g.empaque);
+    const np=calcPrecio(cr, g.margenD, g.margenM, g.redondeo||100);
+    ST.productos[pi].costoReal=Math.round(cr*100)/100;
+    ST.productos[pi].precioD=np.pD;
+    ST.productos[pi].precioM=np.pM;
+    ST.productos[pi].margenD=g.margenD*100;
+    ST.productos[pi].margenM=g.margenM*100;
+  });
+  save(ST);
+  showBackupMsg('✓ Cambios guardados. Precios del grupo actualizados.','alert-green');
+}
+
+function showBackupMsg(msg,cls){
+  const el=$('backup-msg');
+  el.className='alert '+cls;
+  el.textContent=msg;
+  el.style.display='block';
+  setTimeout(()=>el.style.display='none',3000);
+}
+
+// ── BACKUP ───────────────────────────────────────────────────────────
+function exportBackup(){
+  const data=JSON.stringify(ST,null,2);
+  const blob=new Blob([data],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='laverdu_backup_'+new Date().toLocaleDateString('es-AR').replace(/\//g,'-')+'.json';
+  a.click();
+}
+
+function importBackup(input){
+  const file=input.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const d=JSON.parse(e.target.result);
+      if(!d.version) throw new Error('Archivo inválido');
+      ST=d; save(ST);
+      showBackupMsg('✓ Backup importado correctamente','alert-green');
+      renderInicio();
+    }catch(err){ showBackupMsg('✗ Error al importar: '+err.message,'alert-red'); }
+  };
+  reader.readAsText(file);
+  input.value='';
+}
+
+function resetData(){
+  if(confirm('¿Restablecer TODOS los datos al estado original del XLSM? Se perderán todos los cambios.')){
+    localStorage.removeItem(SK);
+    ST=getState();
+    showBackupMsg('✓ Datos restablecidos','alert-yellow');
+    renderInicio(); renderConfig();
+  }
+}
+
+// ── INIT ────────────────────────────────────────────────────────────
+renderInicio();
+initMercadoSelect();
+</script>
+</body>
+</html>
